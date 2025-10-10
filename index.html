@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/ef-article-builder.css">
+    <script src="js/ef-article-builder.js"></script>
+    <title>DEMO | EF Article Builder</title>
+</head>
+
+<body>
+
+    <div id="editor"></div>
+
+    <script>
+        const editor = new EfArticleBuilder("#editor", {
+            displayMode: 'inline',
+            editorTheme: 'glassmorphism',
+            contentTheme: 'glassmorphism',
+            licenseKey: "TEST-KEY-123",
+        });
+    </script>
+</body>
+
+</html>
