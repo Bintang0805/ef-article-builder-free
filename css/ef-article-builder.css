@@ -215,50 +215,206 @@
     }
 }
 
+/* ============================================
+   COMPONENT SUBMENU / ACCORDION (PREMIUM)
+   ============================================ */
+
+.ef-component-submenu {
+    margin-bottom: 0.5rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
 .ef-component-submenu-header {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
-    padding: 0.5rem 0.75rem;
+    padding: 0.875rem 1rem;
     background: rgba(255, 255, 255, 0.05);
-    border: 1px solid var(--ef-card-border);
-    border-radius: 6px;
     cursor: pointer;
-    transition: all 0.3s ease;
-    color: var(--ef-text-primary);
-    font-size: 0.8125rem;
-    font-weight: 600;
+    transition: all 0.2s ease;
+    position: relative;
+    overflow: hidden;
 }
 
 .ef-component-submenu-header:hover {
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.ef-component-submenu-header span {
+    flex: 1;
+    font-weight: 600;
+    font-size: 0.875rem;
+    color: var(--ef-text-primary, #f8fafc);
+    position: relative;
+    z-index: 1;
 }
 
 .ef-submenu-icon {
-    transition: transform 0.2s ease;
+    margin-right: 0.75rem;
     font-size: 0.75rem;
-    color: #a78bfa;
+    transition: transform 0.3s ease;
+    color: var(--ef-text-secondary, rgba(248, 250, 252, 0.6));
+    will-change: transform;
+    position: relative;
+    z-index: 1;
 }
 
-.ef-submenu-open .ef-submenu-icon {
+/* PRO Badge untuk Header Submenu */
+.ef-component-submenu-header::after {
+    content: 'PRO';
+    position: absolute;
+    top: 50%;
+    right: 1rem;
+    transform: translateY(-50%);
+    background: linear-gradient(135deg, #f59e0b, #f97316);
+    color: white;
+    padding: 0.25rem 0.625rem;
+    border-radius: 0.75rem;
+    font-size: 0.625rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    box-shadow: 0 2px 4px rgba(245, 158, 11, 0.3);
+    z-index: 2;
+}
+
+/* Badge pulse animation when hovering accordion */
+.ef-component-submenu-header:hover::after {
+    animation: badge-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes badge-pulse {
+
+    0%,
+    100% {
+        box-shadow: 0 2px 4px rgba(245, 158, 11, 0.3);
+    }
+
+    50% {
+        box-shadow: 0 4px 8px rgba(245, 158, 11, 0.5);
+        transform: translateY(-50%) scale(1.05);
+    }
+}
+
+/* Ripple effect saat click */
+.ef-component-submenu-header::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    transform: translate(-50%, -50%);
+    transition: width 0.6s, height 0.6s;
+    z-index: 0;
+}
+
+.ef-component-submenu-header:active::before {
+    width: 200px;
+    height: 200px;
+}
+
+/* ===== PENTING: Accordion Open State ===== */
+.ef-component-submenu.ef-submenu-open .ef-submenu-icon {
     transform: rotate(90deg);
 }
 
+.ef-component-submenu.ef-submenu-open .ef-component-submenu-header {
+    background: rgba(245, 158, 11, 0.1);
+    border-bottom: 1px solid rgba(245, 158, 11, 0.2);
+}
+
+/* Accordion Content */
 .ef-component-submenu-content {
     max-height: 0;
     overflow: hidden;
-    transition: max-height 0.5s;
-    padding: 0 0.1rem;
+    transition: max-height 0.4s ease, padding 0.4s ease;
+    padding: 0 0.5rem;
+    background: rgba(0, 0, 0, 0.2);
 }
 
-.ef-submenu-open .ef-component-submenu-content {
-    max-height: 500px;
-    transition-duration: 0.5s;
+.ef-component-submenu.ef-submenu-open .ef-component-submenu-content {
+    max-height: 1000px;
+    padding: 0.75rem 0.5rem;
 }
 
+/* Component Items dalam Submenu */
 .ef-component-submenu-content .ef-component-item {
-    margin-top: 0.5rem;
-    margin-bottom: 0.25rem;
+    margin-bottom: 0.5rem;
+    padding: 0.75rem 1rem;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    position: relative;
+}
+
+.ef-component-submenu-content .ef-component-item:last-child {
+    margin-bottom: 0;
+}
+
+.ef-component-submenu-content .ef-component-item:hover {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Override locked item styles untuk submenu */
+.ef-component-submenu-content .ef-component-item.ef-premium-locked {
+    opacity: 0.7;
+    cursor: not-allowed !important;
+    background: rgba(255, 193, 7, 0.03);
+    border-color: rgba(245, 158, 11, 0.1);
+}
+
+.ef-component-submenu-content .ef-component-item.ef-premium-locked::after {
+    content: '🔒';
+    position: absolute;
+    top: 50%;
+    right: 1rem;
+    transform: translateY(-50%);
+    font-size: 0.875rem;
+    opacity: 0.6;
+}
+
+.ef-component-submenu-content .ef-component-item.ef-premium-locked:hover {
+    background: rgba(255, 193, 7, 0.06);
+    transform: none;
+}
+
+/* Icon di Component Item */
+.ef-component-submenu-content .ef-component-item i {
+    margin-right: 0.75rem;
+    font-size: 1rem;
+    opacity: 0.7;
+}
+
+.ef-component-submenu-content .ef-component-item.ef-premium-locked i {
+    opacity: 0.4;
+}
+
+/* Animation untuk Accordion expand */
+@keyframes accordion-expand {
+    from {
+        max-height: 0;
+        opacity: 0;
+    }
+
+    to {
+        max-height: 1000px;
+        opacity: 1;
+    }
+}
+
+.ef-component-submenu.ef-submenu-open .ef-component-submenu-content {
+    animation: accordion-expand 0.4s ease-out;
+}
+
+/* Highlight saat hover accordion header */
+.ef-component-submenu-header:active {
+    background: rgba(255, 255, 255, 0.12);
+    transform: scale(0.98);
 }
 
 .ef-components-title {
@@ -273,13 +429,14 @@
 }
 
 .ef-component-group-title {
-    color: rgba(255, 255, 255, 0.7);
+    color: var(--ef-text-primary, #f8fafc);
     font-size: 0.75rem;
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.05em;
     margin: 0 0 0.5rem 0;
 }
+
 
 .ef-component-list {
     display: flex;
@@ -338,6 +495,29 @@
     overflow-x: hidden !important;
     -webkit-overflow-scrolling: touch;
     transition: background 0.3s ease, backdrop-filter 0.3s ease;
+}
+
+/* Premium Required Modal */
+.ef-modal-premium-required .ef-modal-content {
+    max-width: 500px;
+}
+
+.ef-modal-premium-required .ef-modal-header h3 {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.ef-modal-premium-required .ef-modal-header i.fa-lock {
+    color: #f59e0b;
+}
+
+.ef-modal-premium-required .ef-btn-primary {
+    background: linear-gradient(135deg, #f59e0b, #f97316);
+}
+
+.ef-modal-premium-required .ef-btn-primary:hover {
+    background: linear-gradient(135deg, #d97706, #ea580c);
 }
 
 /* Modal Active State dengan Animasi */
@@ -896,126 +1076,178 @@ body.ef-modal-open {
     }
 }
 
-/* ========== COMPONENT PREVIEW TOOLTIP ========== */
+/* ============================================
+   COMPONENT PREVIEW TOOLTIP - AUTO WIDTH
+   ============================================ */
+
 .ef-component-preview-tooltip {
-    background: var(--ef-card-bg);
+    position: fixed;
+    background: var(--ef-card-bg, rgba(255, 255, 255, 0.1));
     backdrop-filter: blur(20px);
-    border: 2px solid var(--ef-card-border);
+    border: 1px solid var(--ef-card-border, rgba(255, 255, 255, 0.2));
     border-radius: 12px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+    z-index: 999999;
+
+    /* 🔥 AUTO WIDTH DENGAN CONSTRAINTS */
+    min-width: 400px;
+    max-width: 40vw;
+    /* 90% viewport width - tidak akan keluar layar */
+    width: auto;
+    /* Auto adjust to content */
+    max-height: 80vh;
+    overflow-y: auto;
+
+    animation: ef-tooltip-fadein 0.2s ease-out;
+}
+
+/* Responsive breakpoints */
+@media (max-width: 1200px) {
+    .ef-component-preview-tooltip {
+        min-width: 350px;
+        max-width: 50vw;
+    }
+}
+
+@media (max-width: 768px) {
+    .ef-component-preview-tooltip {
+        min-width: 300px;
+        max-width: 95vw;
+        max-height: 70vh;
+    }
+}
+
+/* Scrollbar styling */
+.ef-component-preview-tooltip::-webkit-scrollbar {
+    width: 6px;
+}
+
+.ef-component-preview-tooltip::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 3px;
+}
+
+.ef-component-preview-tooltip::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 3px;
+}
+
+.ef-component-preview-tooltip::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.5);
+}
+
+/* Header - fixed width untuk consistency */
+.ef-component-preview-header {
+    padding: 0.875rem 1.25rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    font-weight: 600;
+    font-size: 0.875rem;
+    color: var(--ef-text-primary, #f8fafc);
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px 12px 0 0;
+    white-space: nowrap;
+    /* Prevent header text wrap */
+}
+
+/* Body - let content dictate width */
+.ef-component-preview-body {
     padding: 0;
-    max-width: 400px;
-    min-width: 300px;
-    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
-    animation: tooltipFadeIn 0.2s ease;
-    pointer-events: none;
+    max-height: calc(80vh - 60px);
+    overflow-y: auto;
+    overflow-x: hidden;
+    /* Prevent horizontal scroll */
+}
+
+.ef-component-preview-body .ef-preview-container {
+    padding: 1.25rem !important;
+    min-height: 100px;
+    box-sizing: border-box;
+}
+
+/* 🔥 SPECIAL HANDLING FOR IMAGES */
+.ef-component-preview-body .ef-image-block {
+    width: 100%;
+    max-width: none;
+    /* Allow full width */
+}
+
+.ef-component-preview-body .ef-image-block img {
+    width: 100%;
+    height: auto;
+    max-width: 100%;
+    display: block;
+    border-radius: 8px;
+}
+
+.ef-component-preview-body .ef-image-caption {
+    margin-top: 0.75rem;
+    font-size: 0.875rem;
+    color: var(--ef-text-secondary, rgba(248, 250, 252, 0.8));
+    text-align: center;
+}
+
+/* 🔥 SPECIAL HANDLING FOR EMBEDS */
+.ef-component-preview-body .ef-embed-block {
+    width: 100%;
+}
+
+.ef-component-preview-body .ef-embed-container {
+    position: relative;
+    padding-bottom: 56.25%;
+    /* 16:9 aspect ratio */
+    height: 0;
     overflow: hidden;
 }
 
-.ef-component-preview-header {
-    background: rgba(99, 102, 241, 0.1);
-    border-bottom: 1px solid var(--ef-card-border);
-    padding: 0.625rem 0.875rem;
-    font-size: 0.6875rem;
-    text-transform: uppercase;
-    color: #6366f1;
-    font-weight: 700;
-    letter-spacing: 0.05em;
-    display: flex;
-    align-items: center;
-    gap: 0.375rem;
+.ef-component-preview-body .ef-embed-container iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 8px;
 }
 
-.ef-component-preview-header i {
-    font-size: 0.75rem;
+/* 🔥 SPECIAL HANDLING FOR GRIDS */
+.ef-component-preview-body .ef-card-grid {
+    width: 100%;
 }
 
-.ef-component-preview-body {
-    max-height: 400px;
-    overflow-y: auto;
-    overflow-x: hidden;
+/* 🔥 SPECIAL HANDLING FOR TABLES */
+.ef-component-preview-body .ef-table {
+    width: 100%;
+    min-width: 500px;
 }
 
-/* Scale down content slightly for preview */
-.ef-component-preview-body .ef-preview-container {
-    transform: scale(0.9);
-    transform-origin: top left;
-    width: 111.11%;
-    /* Compensate for scale */
-}
-
-/* Override some styles for better preview display */
-.ef-component-preview-body .ef-preview-container h2,
-.ef-component-preview-body .ef-preview-container h3,
-.ef-component-preview-body .ef-preview-container h4 {
-    margin-top: 0 !important;
-}
-
-.ef-component-preview-body .ef-preview-container>*:first-child {
-    margin-top: 0 !important;
-}
-
-.ef-component-preview-body .ef-preview-container>*:last-child {
-    margin-bottom: 0 !important;
-}
-
-/* Scrollbar untuk preview body */
-.ef-component-preview-body::-webkit-scrollbar {
-    width: 4px;
-}
-
-.ef-component-preview-body::-webkit-scrollbar-track {
-    background: rgba(255, 255, 255, 0.03);
-}
-
-.ef-component-preview-body::-webkit-scrollbar-thumb {
-    background: rgba(99, 102, 241, 0.5);
-    border-radius: 2px;
-}
-
-@keyframes tooltipFadeIn {
+/* Animation */
+@keyframes ef-tooltip-fadein {
     from {
         opacity: 0;
-        transform: translateX(-10px) scale(0.95);
+        transform: translateY(-10px) scale(0.95);
     }
 
     to {
         opacity: 1;
-        transform: translateX(0) scale(1);
+        transform: translateY(0) scale(1);
     }
 }
 
 .ef-tooltip-closing {
-    animation: tooltipFadeOut 0.15s ease forwards;
+    animation: ef-tooltip-fadeout 0.15s ease-in forwards;
 }
 
-@keyframes tooltipFadeOut {
+@keyframes ef-tooltip-fadeout {
     from {
         opacity: 1;
-        transform: translateX(0) scale(1);
+        transform: scale(1);
     }
 
     to {
         opacity: 0;
-        transform: translateX(-5px) scale(0.95);
-    }
-}
-
-/* Responsive tooltip */
-@media (max-width: 1280px) {
-    .ef-component-preview-tooltip {
-        max-width: 320px;
-        min-width: 260px;
-    }
-}
-
-@media (max-width: 1023px) {
-    .ef-component-preview-tooltip {
-        max-width: 280px;
-        min-width: 240px;
-    }
-
-    .ef-component-preview-body {
-        max-height: 250px;
+        transform: scale(0.95);
     }
 }
 
@@ -1170,7 +1402,6 @@ body.ef-modal-open {
     font-size: 1.25rem !important;
     font-weight: 600 !important;
     color: var(--ef-text-primary) !important;
-    padding: 1rem 0 0.5rem 0 !important;
 }
 
 .ef-preview-container p,
@@ -1199,13 +1430,13 @@ body.ef-modal-open {
     padding: 1rem 0 !important;
     padding-left: 1.5rem !important;
     color: var(--ef-text-secondary) !important;
-    list-style: disc;
 }
 
 .ef-preview-container li,
 .ef-modal-body .ef-preview-container li {
     padding-bottom: 0.5rem !important;
     color: var(--ef-text-secondary) !important;
+    list-style: disc;
 }
 
 .ef-preview-container .ef-code-block,
@@ -1251,9 +1482,16 @@ body.ef-modal-open {
     flex-shrink: 0 !important;
 }
 
+.ef-preview-container .ef-tip-icon svg,
+.ef-modal-body .ef-preview-container .ef-tip-icon svg {
+    font-size: 1.25rem !important;
+    color: var(--ef-text-primary);
+}
+
 .ef-preview-container .ef-tip-icon i,
 .ef-modal-body .ef-preview-container .ef-tip-icon i {
     font-size: 1.25rem !important;
+    color: var(--ef-text-primary);
 }
 
 .ef-preview-container .ef-tip-content,
@@ -1576,8 +1814,6 @@ body.ef-modal-open {
 }
 
 /* ========== CARD GRID LAYOUTS - 3 VARIANTS ========== */
-/* REPLACE .ef-card-grid yang lama dengan ini */
-
 /* Base Grid Styles */
 .ef-preview-container .ef-card-grid,
 .ef-modal-body .ef-preview-container .ef-card-grid {
@@ -2253,8 +2489,9 @@ body.ef-modal-open {
     .ef-preview-container .ef-table,
     .ef-modal-body .ef-preview-container .ef-table {
         font-size: 0.875rem !important;
-        display: block !important;
-        overflow-x: auto !important;
+        display: table !important;
+        overflow: hidden !important;
+        border-radius: 12px !important;
         -webkit-overflow-scrolling: touch !important;
     }
 
@@ -2287,6 +2524,19 @@ body.ef-modal-open {
         display: table-cell !important;
         white-space: nowrap !important;
     }
+}
+
+@media (max-width: 440px) {
+
+    .ef-preview-container .ef-table,
+    .ef-modal-body .ef-preview-container .ef-table {
+        font-size: 0.875rem !important;
+        display: table !important;
+        overflow: hidden !important;
+        border-radius: 12px !important;
+        -webkit-overflow-scrolling: touch !important;
+    }
+
 }
 
 /* ========== TIMELINE COMPONENTS - 2 VARIANTS ========== */
@@ -3200,6 +3450,12 @@ body.ef-modal-open {
     margin-bottom: 1rem !important;
 }
 
+.ef-preview-container .ef-card-icon-large svg,
+.ef-modal-body .ef-preview-container .ef-card-icon-large svg {
+    color: white !important;
+    font-size: 2rem !important;
+}
+
 .ef-preview-container .ef-card-icon-large i,
 .ef-modal-body .ef-preview-container .ef-card-icon-large i {
     color: white !important;
@@ -3397,120 +3653,6 @@ body.ef-modal-open {
         font-size: 1.125rem !important;
     }
 
-    /* ========== CARD GRID LAYOUTS - 3 VARIANTS ========== */
-    /* REPLACE .ef-card-grid yang lama dengan ini */
-
-    /* Base Grid Styles */
-    .ef-preview-container .ef-card-grid,
-    .ef-modal-body .ef-preview-container .ef-card-grid {
-        margin: 2rem 0 !important;
-        gap: 1.5rem !important;
-    }
-
-    /* 2 Column Grid */
-    .ef-preview-container .ef-card-grid-2col,
-    .ef-modal-body .ef-preview-container .ef-card-grid-2col {
-        display: grid !important;
-        grid-template-columns: repeat(2, 1fr) !important;
-    }
-
-    /* 3 Column Grid */
-    .ef-preview-container .ef-card-grid-3col,
-    .ef-modal-body .ef-preview-container .ef-card-grid-3col {
-        display: grid !important;
-        grid-template-columns: repeat(3, 1fr) !important;
-    }
-
-    /* Masonry Grid */
-    .ef-preview-container .ef-card-grid-masonry,
-    .ef-modal-body .ef-preview-container .ef-card-grid-masonry {
-        display: grid !important;
-        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)) !important;
-        grid-auto-flow: dense !important;
-    }
-
-    /* Masonry Card Sizes */
-    .ef-preview-container .ef-card-grid-masonry .ef-card-short,
-    .ef-modal-body .ef-preview-container .ef-card-grid-masonry .ef-card-short {
-        grid-row: span 1 !important;
-    }
-
-    .ef-preview-container .ef-card-grid-masonry .ef-card-medium,
-    .ef-modal-body .ef-preview-container .ef-card-grid-masonry .ef-card-medium {
-        grid-row: span 2 !important;
-    }
-
-    .ef-preview-container .ef-card-grid-masonry .ef-card-long,
-    .ef-modal-body .ef-preview-container .ef-card-grid-masonry .ef-card-long {
-        grid-row: span 3 !important;
-    }
-
-    /* Grid Card Icon (berbeda dari card-icon yang sudah ada) */
-    .ef-preview-container .ef-card-grid .ef-card-icon,
-    .ef-modal-body .ef-preview-container .ef-card-grid .ef-card-icon {
-        width: 48px !important;
-        height: 48px !important;
-        background: linear-gradient(135deg, #3b82f6, #06b6d4) !important;
-        border-radius: 8px !important;
-        display: flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-        margin-bottom: 1rem !important;
-    }
-
-    .ef-preview-container .ef-card-grid .ef-card-icon i,
-    .ef-modal-body .ef-preview-container .ef-card-grid .ef-card-icon i {
-        color: white !important;
-        font-size: 1.5rem !important;
-    }
-
-    /* Hover Effect untuk semua grid cards */
-    .ef-preview-container .ef-card-grid .ef-card,
-    .ef-modal-body .ef-preview-container .ef-card-grid .ef-card {
-        transition: all 0.3s ease !important;
-    }
-
-    .ef-preview-container .ef-card-grid .ef-card:hover,
-    .ef-modal-body .ef-preview-container .ef-card-grid .ef-card:hover {
-        transform: translateY(-4px) !important;
-        box-shadow: 0 8px 16px rgba(99, 102, 241, 0.2) !important;
-    }
-
-    /* Responsive Breakpoints */
-    @media (max-width: 1024px) {
-
-        .ef-preview-container .ef-card-grid-3col,
-        .ef-modal-body .ef-preview-container .ef-card-grid-3col {
-            grid-template-columns: repeat(2, 1fr) !important;
-        }
-    }
-
-    @media (max-width: 767px) {
-
-        .ef-preview-container .ef-card-grid-2col,
-        .ef-preview-container .ef-card-grid-3col,
-        .ef-modal-body .ef-preview-container .ef-card-grid-2col,
-        .ef-modal-body .ef-preview-container .ef-card-grid-3col {
-            grid-template-columns: 1fr !important;
-            gap: 1rem !important;
-        }
-
-        .ef-preview-container .ef-card-grid-masonry,
-        .ef-modal-body .ef-preview-container .ef-card-grid-masonry {
-            grid-template-columns: 1fr !important;
-        }
-
-        /* Reset masonry heights on mobile */
-        .ef-preview-container .ef-card-grid-masonry .ef-card-short,
-        .ef-preview-container .ef-card-grid-masonry .ef-card-medium,
-        .ef-preview-container .ef-card-grid-masonry .ef-card-long,
-        .ef-modal-body .ef-preview-container .ef-card-grid-masonry .ef-card-short,
-        .ef-modal-body .ef-preview-container .ef-card-grid-masonry .ef-card-medium,
-        .ef-modal-body .ef-preview-container .ef-card-grid-masonry .ef-card-long {
-            grid-row: span 1 !important;
-        }
-    }
-
     .ef-preview-container .ef-cta-buttons,
     .ef-modal-body .ef-preview-container .ef-cta-buttons {
         flex-direction: column !important;
@@ -3625,4 +3767,230 @@ body.ef-modal-open {
         padding: 0.75rem;
         font-size: 0.75rem;
     }
+}
+
+
+/* Locked Premium Blocks */
+.ef-canvas-block-locked {
+    background: rgba(255, 193, 7, 0.1) !important;
+    border-left: 4px solid #ff9800 !important;
+    opacity: 0.7;
+}
+
+.ef-canvas-block-locked:hover {
+    background: rgba(255, 193, 7, 0.15) !important;
+}
+
+/* Premium Placeholder (for HTML output) */
+.ef-premium-placeholder {
+    background: rgba(255, 255, 255, 0.05);
+    border: 2px dashed rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    padding: 2rem;
+    text-align: center;
+    margin: 1.5rem 0;
+}
+
+.ef-premium-placeholder-icon {
+    font-size: 3rem;
+    color: rgba(255, 255, 255, 0.3);
+    margin-bottom: 1rem;
+}
+
+.ef-premium-placeholder-content p {
+    margin: 0.5rem 0;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.ef-premium-placeholder-content p strong {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 1.1rem;
+}
+
+/* Sidebar Premium Items (Locked) - For Flat List */
+.ef-component-list>.ef-component-item.ef-premium-locked {
+    opacity: 0.6;
+    cursor: not-allowed !important;
+    background: rgba(255, 193, 7, 0.05);
+    position: relative;
+}
+
+.ef-component-list>.ef-component-item.ef-premium-locked::after {
+    content: 'PRO';
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    right: 0.75rem;
+    background: linear-gradient(135deg, #f59e0b, #f97316);
+    color: white;
+    padding: 0.125rem 0.5rem;
+    border-radius: 0.5rem;
+    font-size: 0.625rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+}
+
+.ef-component-list>.ef-component-item.ef-premium-locked:hover {
+    background: rgba(255, 193, 7, 0.1);
+    transform: none;
+}
+
+/* Locked Edit Form */
+.ef-locked-edit-notice {
+    background: rgba(255, 193, 7, 0.1);
+    border: 2px solid #f59e0b;
+    border-radius: 8px;
+    padding: 1.5rem;
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+
+.ef-locked-icon {
+    font-size: 3rem;
+    color: #f59e0b;
+    margin-bottom: 1rem;
+}
+
+.ef-locked-edit-notice h4 {
+    margin: 0.5rem 0;
+    color: var(--ef-text-primary);
+}
+
+.ef-locked-edit-notice p {
+    margin: 0.5rem 0;
+    color: var(--ef-text-secondary);
+}
+
+.ef-locked-preview {
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    padding: 1rem;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.ef-locked-preview p {
+    margin: 0.5rem 0;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.875rem;
+}
+
+.ef-locked-edit-actions {
+    margin-top: 1.5rem;
+}
+
+/* Expiry Banner */
+.ef-expiry-banner {
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.9), rgba(249, 115, 22, 0.9));
+    border-radius: 8px;
+    padding: 1rem 1.5rem;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    animation: ef-banner-slide-down 0.3s ease-out;
+}
+
+@keyframes ef-banner-slide-down {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.ef-expiry-banner-content {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    color: white;
+    flex: 1;
+}
+
+.ef-expiry-banner-content i {
+    font-size: 1.5rem;
+}
+
+.ef-expiry-banner-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.ef-btn-warning {
+    background: rgba(255, 255, 255, 0.9);
+    color: #d97706;
+    border: none;
+}
+
+.ef-btn-warning:hover {
+    background: white;
+    color: #b45309;
+}
+
+.ef-expiry-banner-close {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.25rem;
+    cursor: pointer;
+    padding: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    transition: all 0.2s;
+}
+
+.ef-expiry-banner-close:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+/* Premium Preview Locked */
+.ef-premium-preview-locked {
+    background: rgba(255, 255, 255, 0.05);
+    border: 2px dashed rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    padding: 2.5rem;
+    text-align: center;
+    margin: 1.5rem 0;
+}
+
+.ef-premium-preview-icon {
+    font-size: 3.5rem;
+    color: rgba(255, 255, 255, 0.3);
+    margin-bottom: 1rem;
+}
+
+.ef-premium-preview-content p {
+    margin: 0.5rem 0;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.ef-premium-preview-content p strong {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 1.125rem;
+}
+
+/* Live Preview Locked */
+.ef-live-preview-locked {
+    background: rgba(255, 193, 7, 0.1);
+    border: 1px dashed #f59e0b;
+    border-radius: 6px;
+    padding: 1rem;
+    text-align: center;
+    margin: 1rem 0;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.875rem;
+}
+
+.ef-live-preview-locked i {
+    color: #f59e0b;
+    margin-right: 0.5rem;
 }

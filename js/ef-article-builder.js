@@ -25,7 +25,7 @@
             ul: { tag: 'ul', text: 'Item pertama\nItem kedua\nItem ketiga', class: '', layout: 'column' },
             code: { tag: 'div', type: 'code-block', text: '// Contoh code\nfunction hello() {\n  console.log("Hello World");\n}', class: '', layout: 'column' },
 
-            'image': { tag: 'div', type: 'image', text: 'https://placehold.co/800x400|Image Title|This is an image caption', class: '', layout: 'column' },
+            'image': { tag: 'div', type: 'image', text: 'https://placehold.co/200x100|Image Title|This is an image caption', class: '', layout: 'column' },
             'embed': { tag: 'div', type: 'embed', text: 'youtube|https://www.youtube.com/watch?v=jNQXAC9IVRw|Video Title (Optional)', class: '', layout: 'column' },
 
             // Dividers
@@ -112,12 +112,17 @@
             // Premium status
             this.isPremium = false;
             this.premiumLoaded = false;
+            // Signature system for anti-duplicate
+            this.signatureSecret = this.licenseKey || 'ef-default-secret';
 
             // Load base components
             this.templates = { ...BaseComponentsRegistry.templates };
             this.componentGroups = { ...BaseComponentsRegistry.groups };
             this.componentIcons = { ...BaseComponentsRegistry.icons };
             this.componentLabels = { ...BaseComponentsRegistry.labels };
+
+            // Load premium metadata (for sidebar display only)
+            this.loadPremiumMetadata();
 
             // Initialize themes
             this.initThemes();
@@ -159,6 +164,22 @@
         }
 
         async validateAndLoadPremium(licenseKey) {
+            // ⚠️ TESTING MODE FLAG
+            const TESTING_MODE = true; // Set false untuk production
+
+            if (TESTING_MODE) {
+                console.warn('🧪 TESTING MODE: Loading premium from local file');
+                try {
+                    await this.loadPremiumScript('file:///home/muhammad-ikhsan-bintang/My%20Workspace/ef-code/sources/ef-article-builder-code/premium-code/ef-article-builder-pro.js');
+                    this.isPremium = true;
+                    return true;
+                } catch (error) {
+                    console.error('✗ Failed to load premium:', error);
+                    return false;
+                }
+            }
+
+            // PRODUCTION: API Validation
             try {
                 const response = await fetch(this.options.apiEndpoint, {
                     method: 'POST',
@@ -232,6 +253,7 @@
         initEditor() {
             this.container.innerHTML = this.getEditorHTML();
             this.applyEditorTheme();
+            this.checkAndShowExpiryBanner();
             this.attachEvents();
             this.initDragDrop();
             this.initModals();
@@ -244,6 +266,62 @@
                 setTimeout(() => {
                     this.options.onReady(this);
                 }, 1000);
+            }
+        }
+
+        checkAndShowExpiryBanner() {
+            // Count locked premium blocks
+            const lockedCount = this.data.filter(block =>
+                this.isPremiumBlock(block) && !this.isPremium
+            ).length;
+
+            if (lockedCount > 0) {
+                this.showExpiryBanner(lockedCount);
+            }
+        }
+
+        showExpiryBanner(count) {
+            const editorBody = this.container.querySelector('.ef-editor-body');
+            if (!editorBody) return;
+
+            // Check if banner already exists
+            if (this.container.querySelector('.ef-expiry-banner')) return;
+
+            const banner = document.createElement('div');
+            banner.className = 'ef-expiry-banner';
+            banner.innerHTML = `
+                <div class="ef-expiry-banner-content">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <span><strong>${count}</strong> premium component${count > 1 ? 's are' : ' is'} locked. License required to edit.</span>
+                </div>
+                <div class="ef-expiry-banner-actions">
+                    <button class="ef-btn ef-btn-sm ef-btn-warning" onclick="window.open('https://yoursite.com/renew', '_blank')">
+                        <i class="fas fa-key"></i> Renew License
+                    </button>
+                    <button class="ef-expiry-banner-close" onclick="this.closest('.ef-expiry-banner').remove()">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            `;
+
+            editorBody.insertBefore(banner, editorBody.firstChild);
+        }
+
+        updateExpiryBanner() {
+            const banner = this.container.querySelector('.ef-expiry-banner');
+            if (!banner) return;
+
+            const lockedCount = this.data.filter(block =>
+                this.isPremiumBlock(block) && !this.isPremium
+            ).length;
+
+            if (lockedCount === 0) {
+                banner.remove();
+            } else {
+                const countSpan = banner.querySelector('.ef-expiry-banner-content span');
+                if (countSpan) {
+                    countSpan.innerHTML = `<strong>${lockedCount}</strong> premium component${lockedCount > 1 ? 's are' : ' is'} locked. License required to edit.`;
+                }
             }
         }
 
@@ -371,6 +449,159 @@
             };
         }
 
+        loadPremiumMetadata() {
+            // Premium component metadata (for sidebar display)
+            // Actual rendering will be handled by premium file when loaded
+
+            const premiumTemplates = {
+                // TIP BLOCKS (10 variants)
+                'tip-info': { tag: 'div', type: 'tip-info', text: '', class: '', layout: 'column' },
+                'tip-success': { tag: 'div', type: 'tip-success', text: '', class: '', layout: 'column' },
+                'tip-warning': { tag: 'div', type: 'tip-warning', text: '', class: '', layout: 'column' },
+                'tip-danger': { tag: 'div', type: 'tip-danger', text: '', class: '', layout: 'column' },
+                'tip-note': { tag: 'div', type: 'tip-note', text: '', class: '', layout: 'column' },
+                'tip-question': { tag: 'div', type: 'tip-question', text: '', class: '', layout: 'column' },
+                'tip-star': { tag: 'div', type: 'tip-star', text: '', class: '', layout: 'column' },
+                'tip-check': { tag: 'div', type: 'tip-check', text: '', class: '', layout: 'column' },
+                'tip-quote': { tag: 'div', type: 'tip-quote', text: '', class: '', layout: 'column' },
+                'tip-steps': { tag: 'div', type: 'tip-steps', text: '', class: '', layout: 'column' },
+
+                // CARDS (7 variants)
+                'card-basic': { tag: 'div', type: 'card-basic', text: '', class: '', layout: 'column' },
+                'card-image': { tag: 'div', type: 'card-image', text: '', class: '', layout: 'column' },
+                'card-icon-top': { tag: 'div', type: 'card-icon-top', text: '', class: '', layout: 'column' },
+                'card-hover': { tag: 'div', type: 'card-hover', text: '', class: '', layout: 'column' },
+                'card-bordered': { tag: 'div', type: 'card-bordered', text: '', class: '', layout: 'column' },
+                'card-gradient': { tag: 'div', type: 'card-gradient', text: '', class: '', layout: 'column' },
+                'card-stat': { tag: 'div', type: 'card-stat', text: '', class: '', layout: 'column' },
+
+                // GRIDS (3 variants)
+                'card-grid-2col': { tag: 'div', type: 'card-grid-2col', text: '', class: '', layout: 'row' },
+                'card-grid-3col': { tag: 'div', type: 'card-grid-3col', text: '', class: '', layout: 'row' },
+                'card-grid-masonry': { tag: 'div', type: 'card-grid-masonry', text: '', class: '', layout: 'row' },
+
+                // CTAs (5 variants)
+                'cta-center': { tag: 'div', type: 'cta-center', text: '', class: '', layout: 'column' },
+                'cta-split': { tag: 'div', type: 'cta-split', text: '', class: '', layout: 'column' },
+                'cta-minimal': { tag: 'div', type: 'cta-minimal', text: '', class: '', layout: 'column' },
+                'cta-urgent': { tag: 'div', type: 'cta-urgent', text: '', class: '', layout: 'column' },
+                'cta-newsletter': { tag: 'div', type: 'cta-newsletter', text: '', class: '', layout: 'column' },
+
+                // TABLES (3 variants)
+                'table-basic': { tag: 'table', type: 'table-basic', text: '', class: '', layout: 'column' },
+                'table-striped': { tag: 'table', type: 'table-striped', text: '', class: '', layout: 'column' },
+                'table-comparison': { tag: 'table', type: 'table-comparison', text: '', class: '', layout: 'column' },
+
+                // TIMELINE (2 variants)
+                'timeline-vertical': { tag: 'div', type: 'timeline-vertical', text: '', class: '', layout: 'column' },
+                'timeline-horizontal': { tag: 'div', type: 'timeline-horizontal', text: '', class: '', layout: 'row' },
+
+                // ACCORDION (2 variants)
+                'accordion-faq': { tag: 'div', type: 'accordion-faq', text: '', class: '', layout: 'column' },
+                'accordion-simple': { tag: 'div', type: 'accordion-simple', text: '', class: '', layout: 'column' },
+
+                // POLLS (3 variants)
+                'poll-emoji': { tag: 'div', type: 'poll-emoji', text: '', class: '', layout: 'column' },
+                'poll-rating': { tag: 'div', type: 'poll-rating', text: '', class: '', layout: 'column' },
+                'poll-vote': { tag: 'div', type: 'poll-vote', text: '', class: '', layout: 'column' }
+            };
+
+            const premiumGroups = {
+                'Specials': {
+                    'Tip Blocks': ['tip-info', 'tip-success', 'tip-warning', 'tip-danger', 'tip-note', 'tip-question', 'tip-star', 'tip-check', 'tip-quote', 'tip-steps'],
+                    'Cards': ['card-basic', 'card-image', 'card-icon-top', 'card-hover', 'card-bordered', 'card-gradient', 'card-stat'],
+                    'Grid Layouts': ['card-grid-2col', 'card-grid-3col', 'card-grid-masonry'],
+                    'Call to Action': ['cta-center', 'cta-split', 'cta-minimal', 'cta-urgent', 'cta-newsletter'],
+                    'Timeline': ['timeline-vertical', 'timeline-horizontal'],
+                    'Accordion': ['accordion-faq', 'accordion-simple'],
+                    'Tables': ['table-basic', 'table-striped', 'table-comparison'],
+                    'Interactive': ['poll-emoji', 'poll-rating', 'poll-vote']
+                }
+            };
+
+            const premiumIcons = {
+                'tip-info': 'info-circle',
+                'tip-success': 'check-circle',
+                'tip-warning': 'exclamation-triangle',
+                'tip-danger': 'exclamation-circle',
+                'tip-note': 'sticky-note',
+                'tip-question': 'question-circle',
+                'tip-star': 'star',
+                'tip-check': 'check-square',
+                'tip-quote': 'quote-left',
+                'tip-steps': 'list-ol',
+                'card-basic': 'square',
+                'card-image': 'image',
+                'card-icon-top': 'arrow-up',
+                'card-hover': 'hand-pointer',
+                'card-bordered': 'border-style',
+                'card-gradient': 'fill-drip',
+                'card-stat': 'chart-line',
+                'card-grid-2col': 'th',
+                'card-grid-3col': 'th-large',
+                'card-grid-masonry': 'grip-horizontal',
+                'cta-center': 'bullhorn',
+                'cta-split': 'columns',
+                'cta-minimal': 'minus-circle',
+                'cta-urgent': 'clock',
+                'cta-newsletter': 'envelope',
+                'table-basic': 'table',
+                'table-striped': 'list',
+                'table-comparison': 'columns',
+                'timeline-vertical': 'stream',
+                'timeline-horizontal': 'arrows-alt-h',
+                'accordion-faq': 'question-circle',
+                'accordion-simple': 'chevron-down',
+                'poll-emoji': 'smile',
+                'poll-rating': 'star',
+                'poll-vote': 'poll-h'
+            };
+
+            const premiumLabels = {
+                'tip-info': 'Info Tip',
+                'tip-success': 'Success Tip',
+                'tip-warning': 'Warning Tip',
+                'tip-danger': 'Danger Tip',
+                'tip-note': 'Note Tip',
+                'tip-question': 'Question Tip',
+                'tip-star': 'Pro Tip',
+                'tip-check': 'Best Practice',
+                'tip-quote': 'Quote Block',
+                'tip-steps': 'Quick Steps',
+                'card-basic': 'Basic Card',
+                'card-image': 'Image Card',
+                'card-icon-top': 'Icon Top Card',
+                'card-hover': 'Hover Card',
+                'card-bordered': 'Bordered Card',
+                'card-gradient': 'Gradient Card',
+                'card-stat': 'Statistic Card',
+                'card-grid-2col': '2 Column Grid',
+                'card-grid-3col': '3 Column Grid',
+                'card-grid-masonry': 'Masonry Grid',
+                'cta-center': 'Center CTA',
+                'cta-split': 'Split CTA',
+                'cta-minimal': 'Minimal CTA',
+                'cta-urgent': 'Urgent CTA',
+                'cta-newsletter': 'Newsletter CTA',
+                'table-basic': 'Basic Table',
+                'table-striped': 'Striped Table',
+                'table-comparison': 'Comparison Table',
+                'timeline-vertical': 'Vertical Timeline',
+                'timeline-horizontal': 'Horizontal Timeline',
+                'accordion-faq': 'FAQ Accordion',
+                'accordion-simple': 'Simple Accordion',
+                'poll-emoji': 'Emoji Reactions',
+                'poll-rating': 'Star Rating',
+                'poll-vote': 'Poll Vote'
+            };
+
+            // Merge dengan existing
+            Object.assign(this.templates, premiumTemplates);
+            Object.assign(this.componentGroups, premiumGroups);
+            Object.assign(this.componentIcons, premiumIcons);
+            Object.assign(this.componentLabels, premiumLabels);
+        }
+
         // ============================================
         // UI RENDERING METHODS
         // ============================================
@@ -436,35 +667,45 @@
                 html += `<div class="ef-component-group"><h4 class="ef-component-group-title">${groupName}</h4>`;
 
                 if (typeof components === 'object' && !Array.isArray(components)) {
+                    // Nested subgroups (for premium)
                     html += `<div class="ef-component-list">`;
                     for (const [subGroupName, subComponents] of Object.entries(components)) {
                         html += `
-                            <div class="ef-component-submenu">
-                                <div class="ef-component-submenu-header" onclick="this.parentElement.classList.toggle('ef-submenu-open')">
-                                    <i class="fas fa-chevron-right ef-submenu-icon"></i>
-                                    <span>${subGroupName}</span>
-                                </div>
-                                <div class="ef-component-submenu-content">`;
+                    <div class="ef-component-submenu">
+                        <div class="ef-component-submenu-header" onclick="this.parentElement.classList.toggle('ef-submenu-open')">
+                            <i class="fas fa-chevron-right ef-submenu-icon"></i>
+                            <span>${subGroupName}</span>
+                        </div>
+                        <div class="ef-component-submenu-content">`;
 
                         subComponents.forEach(type => {
                             const icon = this.componentIcons[type] || 'cube';
                             const label = this.componentLabels[type] || type;
-                            html += `<div class="ef-component-item" draggable="true" data-type="${type}">
-                                <i class="fas fa-${icon}"></i> ${label}
-                            </div>`;
+                            const isPremium = this.isPremiumBlock({ type: type });
+                            const isLocked = isPremium && !this.isPremium;
+                            const lockedClass = isLocked ? ' ef-premium-locked' : '';
+
+                            html += `<div class="ef-component-item${lockedClass}" draggable="${!isLocked}" data-type="${type}">
+                        <i class="fas fa-${icon}"></i> ${label}
+                    </div>`;
                         });
 
                         html += `</div></div>`;
                     }
                     html += `</div>`;
                 } else {
+                    // Flat list (for free components)
                     html += `<div class="ef-component-list">`;
                     components.forEach(type => {
                         const icon = this.componentIcons[type] || 'cube';
                         const label = this.componentLabels[type] || type;
-                        html += `<div class="ef-component-item" draggable="true" data-type="${type}">
-                            <i class="fas fa-${icon}"></i> ${label}
-                        </div>`;
+                        const isPremium = this.isPremiumBlock({ type: type });
+                        const isLocked = isPremium && !this.isPremium;
+                        const lockedClass = isLocked ? ' ef-premium-locked' : '';
+
+                        html += `<div class="ef-component-item${lockedClass}" draggable="${!isLocked}" data-type="${type}">
+                    <i class="fas fa-${icon}"></i> ${label}
+                </div>`;
                     });
                     html += `</div>`;
                 }
@@ -661,10 +902,31 @@
                     if (deleteBtn) {
                         e.stopPropagation();
                         const index = parseInt(block.dataset.index);
-                        if (confirm('Hapus komponen ini?')) {
-                            this.data.splice(index, 1);
-                            this.renderCanvas();
-                            if (this.options.onChange) this.options.onChange(this.generateHTML(true));
+                        const blockData = this.data[index];
+
+                        // Check if premium block
+                        if (this.isPremiumBlock(blockData) && !this.isPremium) {
+                            const label = this.componentLabels[blockData.type] || blockData.type;
+                            const confirmMessage = `⚠️ Hapus '${label}' (Premium)?\n\n` +
+                                `• Anda tidak bisa menambahkan component premium baru di versi free\n` +
+                                `• Content akan hilang permanen\n` +
+                                `• Untuk menambah kembali, perlu renew license\n\n` +
+                                `Yakin ingin menghapus?`;
+
+                            if (confirm(confirmMessage)) {
+                                this.data.splice(index, 1);
+                                this.renderCanvas();
+                                if (this.options.onChange) this.options.onChange(this.generateHTML(true));
+
+                                // Update banner count
+                                this.updateExpiryBanner();
+                            }
+                        } else {
+                            if (confirm('Hapus komponen ini?')) {
+                                this.data.splice(index, 1);
+                                this.renderCanvas();
+                                if (this.options.onChange) this.options.onChange(this.generateHTML(true));
+                            }
                         }
                         return;
                     }
@@ -727,6 +989,16 @@
 
             // Drag from sidebar components
             components.forEach(component => {
+                // Check if locked
+                if (component.classList.contains('ef-premium-locked')) {
+                    // Locked: show modal instead of drag
+                    component.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        this.showPremiumRequiredModal();
+                    });
+                    return; // Skip drag events untuk locked components
+                }
+
                 component.addEventListener('dragstart', (e) => {
                     this.dragState.isNewComponent = true;
                     this.dragState.isSorting = false;
@@ -947,7 +1219,20 @@
         // CANVAS & DATA MANAGEMENT
         // ============================================
         addBlock(type) {
+            // Check if trying to add locked premium component
+            if (this.isPremiumBlock({ type: type }) && !this.isPremium) {
+                console.warn('Cannot add premium component without active license');
+                return; // Prevent add
+            }
+
             const blockData = { ...this.templates[type] };
+
+            // Ensure template exists
+            if (!blockData || !blockData.tag) {
+                console.error('Invalid block type:', type);
+                return;
+            }
+
             this.data.push(blockData);
             this.renderCanvas();
             if (this.options.onChange) this.options.onChange(this.generateHTML(true));
@@ -974,7 +1259,11 @@
             this.data.forEach((block, index) => {
                 if (!block || !block.tag) return;
                 const blockEl = document.createElement('div');
-                blockEl.className = 'ef-canvas-block';
+
+                // Check if locked premium block
+                const isLocked = this.isPremiumBlock(block) && !this.isPremium;
+
+                blockEl.className = isLocked ? 'ef-canvas-block ef-canvas-block-locked' : 'ef-canvas-block';
                 blockEl.draggable = true;
                 blockEl.dataset.index = index;
                 blockEl.innerHTML = this.getBlockPreview(block);
@@ -990,6 +1279,18 @@
                 return '<i class="fas fa-exclamation-triangle"></i> <span>Invalid block</span>';
             }
 
+            // Check if premium block dan license expired
+            if (this.isPremiumBlock(block) && !this.isPremium) {
+                const label = this.componentLabels[block.type] || block.type;
+                return `
+            <i class="fas fa-lock"></i>
+            <span>${label} (License Required)</span>
+            <button class="ef-canvas-block-delete" title="Hapus">
+                <i class="fas fa-trash"></i>
+            </button>
+        `;
+            }
+
             const icon = this.componentIcons[block.type] || this.componentIcons[block.tag] || 'file';
             let text = block.text;
 
@@ -1001,12 +1302,12 @@
             }
 
             return `
-                <i class="fas fa-${icon}"></i>
-                <span>${text}</span>
-                <button class="ef-canvas-block-delete" title="Hapus">
-                    <i class="fas fa-trash"></i>
-                </button>
-            `;
+        <i class="fas fa-${icon}"></i>
+        <span>${text}</span>
+        <button class="ef-canvas-block-delete" title="Hapus">
+            <i class="fas fa-trash"></i>
+        </button>
+    `;
         }
 
         updateDataFromCanvas() {
@@ -1081,10 +1382,68 @@
             }
 
             const formContainer = modal.querySelector('#ef-edit-form');
-            formContainer.innerHTML = this.getEditForm(block);
-            modal.classList.add('ef-modal-active');
-            document.body.classList.add('ef-modal-open');
-            this.attachEditFormEvents(block, formContainer);
+
+            // Check if locked premium block
+            if (this.isPremiumBlock(block) && !this.isPremium) {
+                formContainer.innerHTML = this.getLockedEditForm(block);
+                modal.classList.add('ef-modal-active');
+                document.body.classList.add('ef-modal-open');
+
+                // Disable save button
+                const saveBtn = modal.querySelector('[data-action="save"]');
+                if (saveBtn) {
+                    saveBtn.disabled = true;
+                    saveBtn.style.opacity = '0.5';
+                    saveBtn.style.cursor = 'not-allowed';
+                }
+            } else {
+                formContainer.innerHTML = this.getEditForm(block);
+                modal.classList.add('ef-modal-active');
+                document.body.classList.add('ef-modal-open');
+                this.attachEditFormEvents(block, formContainer);
+            }
+        }
+
+        getLockedEditForm(block) {
+            const label = this.componentLabels[block.type] || block.type;
+            let previewContent = '';
+
+            // Try to show preview of content (readonly)
+            if (block.text) {
+                const lines = block.text.split('\n');
+                previewContent = `
+                    <div class="ef-form-group">
+                        <label>Content Preview (Read-Only)</label>
+                        <div class="ef-locked-preview">
+                            ${lines.slice(0, 5).map(line => `<p>${this.escapeHtml(line)}</p>`).join('')}
+                            ${lines.length > 5 ? '<p><em>... and more content</em></p>' : ''}
+                        </div>
+                    </div>
+                `;
+            }
+
+            return `
+                <div class="ef-locked-edit-notice">
+                    <div class="ef-locked-icon">
+                        <i class="fas fa-lock"></i>
+                    </div>
+                    <h4>Premium Component: ${label}</h4>
+                    <p>This is a premium component that requires an active license to edit.</p>
+                </div>
+                
+                ${previewContent}
+                
+                <div class="ef-locked-edit-actions">
+                    <p style="text-align: center; margin: 1.5rem 0; color: rgba(255,255,255,0.7); font-size: 0.875rem;">
+                        Your license expired or is not active. Renew to unlock editing capabilities.
+                    </p>
+                    <div style="display: flex; gap: 0.5rem; justify-content: center;">
+                        <button class="ef-btn ef-btn-primary" onclick="window.open('https://yoursite.com/renew', '_blank')" style="background: linear-gradient(135deg, #f59e0b, #f97316);">
+                            <i class="fas fa-key"></i> Renew License
+                        </button>
+                    </div>
+                </div>
+            `;
         }
 
         getEditForm(block) {
@@ -2162,7 +2521,30 @@
             const modal = document.body.querySelector(`#ef-modals-${this.instanceId} #ef-modal-preview`);
             if (!modal) return;
             const content = modal.querySelector('#ef-preview-content');
-            content.innerHTML = this.generatePreviewHTML();
+
+            // Generate preview dengan locked placeholders
+            let previewHTML = '';
+            this.data.forEach(block => {
+                if (this.isPremiumBlock(block) && !this.isPremium) {
+                    // Show locked placeholder in preview
+                    const label = this.componentLabels[block.type] || block.type;
+                    previewHTML += `
+                    <div class="ef-premium-preview-locked">
+                        <div class="ef-premium-preview-icon">
+                            <i class="fas fa-lock"></i>
+                        </div>
+                        <div class="ef-premium-preview-content">
+                            <p><strong>Premium Component: ${label}</strong></p>
+                            <p>This content requires an active license to view</p>
+                        </div>
+                    </div>
+                `;
+                } else {
+                    previewHTML += this.renderBlock(block);
+                }
+            });
+
+            content.innerHTML = previewHTML;
             this.applyContentTheme(content);
             modal.classList.add('ef-modal-active');
             document.body.classList.add('ef-modal-open');
@@ -2178,7 +2560,17 @@
                 editorTheme: this.currentEditorTheme,
                 contentTheme: this.currentContentTheme,
                 isPremium: this.isPremium,
-                content: this.data
+                content: this.data.map(block => {
+                    // Filter premium data jika expired
+                    if (this.isPremiumBlock(block) && !this.isPremium) {
+                        return {
+                            type: 'premium-locked',
+                            lockedType: block.type,
+                            note: 'License required to view full data'
+                        };
+                    }
+                    return block;
+                })
             };
             content.textContent = JSON.stringify(jsonData, null, 2);
             modal.classList.add('ef-modal-active');
@@ -2191,7 +2583,23 @@
             const title = modal.querySelector('#ef-code-title');
             const content = modal.querySelector('#ef-code-content');
             title.textContent = 'HTML Export';
-            content.textContent = this.generateHTML(true);
+            // Generate HTML tanpa expose premium content
+            let exportHTML = '';
+            this.data.forEach(block => {
+                if (this.isPremiumBlock(block) && !this.isPremium) {
+                    // Show comment placeholder
+                    exportHTML += `  <!-- Premium Component: ${block.type} (License Required) -->\n`;
+                } else {
+                    exportHTML += this.renderBlock(block);
+                }
+            });
+
+            // Wrap dengan container
+            const themeVars = this.customContentTheme || this.contentThemes[this.currentContentTheme] || this.contentThemes.glassmorphism;
+            const styleVars = Object.entries(themeVars).map(([key, value]) => `${key}: ${value}`).join('; ');
+            const fullHTML = `<div class="ef-preview-container" style="${styleVars}">\n${exportHTML}</div>`;
+
+            content.textContent = fullHTML;
             modal.classList.add('ef-modal-active');
             document.body.classList.add('ef-modal-open');
         }
@@ -2224,7 +2632,7 @@
                     <div class="ef-live-preview-header">
                         <h3><i class="fas fa-eye"></i> Live Preview</h3>
                     </div>
-                    <div class="ef-live-preview-content"></div>
+                    <div class="ef-live-preview-content ef-preview-container"></div>
                 `;
 
                 const canvas = editorBody.querySelector('.ef-canvas');
@@ -2244,7 +2652,22 @@
             if (!this.livePreviewActive) return;
             const livePreviewContent = this.container.querySelector('.ef-live-preview-content');
             if (!livePreviewContent) return;
-            livePreviewContent.innerHTML = this.generateHTML(true);
+
+            // Generate HTML dengan locked placeholders
+            let html = '';
+            this.data.forEach(block => {
+                if (this.isPremiumBlock(block) && !this.isPremium) {
+                    // Show simple placeholder
+                    const label = this.componentLabels[block.type] || block.type;
+                    html += `<div class="ef-live-preview-locked">
+                <i class="fas fa-lock"></i> ${label}
+            </div>`;
+                } else {
+                    html += this.renderBlock(block);
+                }
+            });
+
+            livePreviewContent.innerHTML = html;
             this.applyContentTheme(livePreviewContent);
         }
 
@@ -2311,6 +2734,52 @@
             });
         }
 
+        showPremiumRequiredModal() {
+            const modalHTML = `
+                    <div class="ef-modal ef-modal-premium-required ef-modal-active">
+                        <div class="ef-modal-content ef-modal-sm">
+                            <div class="ef-modal-header">
+                                <h3><i class="fas fa-lock"></i> Premium License Required</h3>
+                                <button class="ef-modal-close" onclick="this.closest('.ef-modal').classList.remove('ef-modal-active'); document.body.classList.remove('ef-modal-open');">&times;</button>
+                            </div>
+                            <div class="ef-modal-body">
+                                <p style="text-align: center; margin: 1.5rem 0;">
+                                    <i class="fas fa-star" style="font-size: 3rem; color: #f59e0b;"></i>
+                                </p>
+                                <p style="text-align: center; margin-bottom: 1rem;">
+                                    This is a <strong>Premium Component</strong>.
+                                </p>
+                                <p style="text-align: center; color: rgba(255,255,255,0.7); font-size: 0.875rem;">
+                                    To add premium components, you need an active license.
+                                </p>
+                            </div>
+                            <div class="ef-modal-footer" style="justify-content: center;">
+                                <button class="ef-btn ef-btn-primary" onclick="window.open('https://yoursite.com/pricing', '_blank')">
+                                    <i class="fas fa-shopping-cart"></i> Get Premium License
+                                </button>
+                                <button class="ef-btn ef-btn-secondary" onclick="this.closest('.ef-modal').classList.remove('ef-modal-active'); document.body.classList.remove('ef-modal-open');">
+                                    Close
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+            // Check if modal container exists
+            let modalContainer = document.getElementById(`ef-modals-${this.instanceId}`);
+            if (!modalContainer) {
+                modalContainer = document.createElement('div');
+                modalContainer.id = `ef-modals-${this.instanceId}`;
+                document.body.appendChild(modalContainer);
+            }
+
+            // Insert modal
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = modalHTML;
+            modalContainer.appendChild(tempDiv.firstElementChild);
+            document.body.classList.add('ef-modal-open');
+        }
+
         // Lanjut ke generatePreviewHTML() di Part 5 (file terpisah karena sangat panjang)...
 
         // Utility
@@ -2319,15 +2788,83 @@
             return text.replace(/[&<>"']/g, m => map[m]);
         }
 
+        // Signature generation for anti-duplicate
+        generateSignature(blockData) {
+            const payload = `${this.signatureSecret}|${Date.now()}|${blockData}`;
+            return this.simpleHash(payload);
+        }
+
+        simpleHash(str) {
+            let hash = 0;
+            for (let i = 0; i < str.length; i++) {
+                const char = str.charCodeAt(i);
+                hash = ((hash << 5) - hash) + char;
+                hash = hash & hash;
+            }
+            return Math.abs(hash).toString(16);
+        }
+
+        validateSignature(signature, blockData) {
+            const expected = this.generateSignature(blockData);
+            return signature === expected;
+        }
+
+        // Check if block is premium type
+        isPremiumBlock(block) {
+            if (!block || !block.type) return false;
+
+            const premiumTypes = [
+                'tip-info', 'tip-success', 'tip-warning', 'tip-danger',
+                'tip-note', 'tip-question', 'tip-star', 'tip-check', 'tip-quote', 'tip-steps',
+                'card-basic', 'card-image', 'card-icon-top', 'card-hover',
+                'card-bordered', 'card-gradient', 'card-stat',
+                'card-grid-2col', 'card-grid-3col', 'card-grid-masonry',
+                'cta-center', 'cta-split', 'cta-minimal', 'cta-urgent', 'cta-newsletter',
+                'table-basic', 'table-striped', 'table-comparison',
+                'timeline-vertical', 'timeline-horizontal',
+                'accordion-faq', 'accordion-simple',
+                'poll-emoji', 'poll-rating', 'poll-vote'
+            ];
+
+            return premiumTypes.includes(block.type);
+        }
+
+        // Detect old premium blocks (without signature wrapper)
+        isOldPremiumBlock(element) {
+            const premiumClasses = [
+                'ef-tip-block',
+                'ef-card',
+                'ef-card-grid',
+                'ef-cta-block',
+                'ef-table',
+                'ef-timeline',
+                'ef-accordion',
+                'ef-poll'
+            ];
+
+            return premiumClasses.some(cls => element.classList.contains(cls));
+        }
+
         // Public API
         export(format = 'json') {
             if (format === 'json') {
-                return JSON.stringify({
+                const exportData = {
                     editorTheme: this.currentEditorTheme,
                     contentTheme: this.currentContentTheme,
                     isPremium: this.isPremium,
-                    content: this.data
-                }, null, 2);
+                    content: this.data.map(block => {
+                        // Filter premium data jika license expired
+                        if (this.isPremiumBlock(block) && !this.isPremium) {
+                            return {
+                                type: 'premium-locked',
+                                lockedType: block.type,
+                                note: 'License required'
+                            };
+                        }
+                        return block;
+                    })
+                };
+                return JSON.stringify(exportData, null, 2);
             } else if (format === 'html') {
                 return this.generateHTML(true);
             }
@@ -2339,10 +2876,10 @@
                 if (typeof data === 'string') {
                     const trimmed = data.trim();
                     if (trimmed.startsWith('<') || trimmed.startsWith('<!')) {
-                        // Parse HTML
+                        // Import HTML
                         const success = this.importHTML(data);
                         if (success) {
-                            this.updateHiddenInput();  // ADD: Sync textarea
+                            this.updateHiddenInput();
                         }
                         return success;
                     } else {
@@ -2354,11 +2891,34 @@
                 if (data.editorTheme) this.setEditorTheme(data.editorTheme);
                 if (data.contentTheme) this.setContentTheme(data.contentTheme);
                 if (data.content && Array.isArray(data.content)) {
-                    this.data = data.content;
+                    this.data = data.content.map(block => {
+                        // Check if premium block needs to be locked
+                        if (this.isPremiumBlock(block) && !this.isPremium) {
+                            return {
+                                type: 'premium-locked',
+                                lockedType: block.type,
+                                encrypted: btoa(JSON.stringify(block)),
+                                note: 'License required'
+                            };
+                        }
+                        return block;
+                    });
                 } else if (Array.isArray(data)) {
-                    this.data = data;
+                    this.data = data.map(block => {
+                        if (this.isPremiumBlock(block) && !this.isPremium) {
+                            return {
+                                type: 'premium-locked',
+                                lockedType: block.type,
+                                encrypted: btoa(JSON.stringify(block)),
+                                note: 'License required'
+                            };
+                        }
+                        return block;
+                    });
                 }
-                this.renderCanvas();  // This now auto-syncs textarea
+
+                this.renderCanvas();
+                this.updateHiddenInput();
                 if (this.options.onChange) this.options.onChange(this.data);
                 return true;
             } catch (error) {
@@ -2375,7 +2935,6 @@
                 // Cari container utama
                 let container = doc.querySelector('.ef-preview-container, .ef-article-content');
                 if (!container) {
-                    // Jika tidak ada container, anggap body sebagai container
                     container = doc.body;
                 }
 
@@ -2389,12 +2948,68 @@
                 const children = Array.from(container.children);
 
                 children.forEach(element => {
-                    const block = this.parseHTMLElement(element);
-                    if (block) blocks.push(block);
+                    // Check if premium wrapper with signature
+                    if (element.classList.contains('ef-premium-wrapper') &&
+                        element.dataset.efPremium === 'true') {
+
+                        const signature = element.dataset.efSignature;
+                        const encodedBlock = element.dataset.efBlock;
+
+                        try {
+                            // Decode block data
+                            const blockData = decodeURIComponent(escape(atob(encodedBlock)));
+                            const block = JSON.parse(blockData);
+
+                            // Validate signature
+                            const expectedSignature = this.generateSignature(blockData);
+
+                            if (signature === expectedSignature && this.isPremium) {
+                                // Valid signature + active license: load full block
+                                blocks.push(block);
+                            } else {
+                                // Invalid signature OR license expired: lock it
+                                blocks.push({
+                                    type: 'premium-locked',
+                                    lockedType: block.type,
+                                    encrypted: encodedBlock,
+                                    note: signature !== expectedSignature ? 'Invalid signature' : 'License required'
+                                });
+                            }
+                        } catch (e) {
+                            console.error('Failed to parse premium block:', e);
+                            // Skip corrupted block
+                        }
+                    }
+                    // Check if old premium block (no wrapper, no signature)
+                    else if (this.isOldPremiumBlock(element)) {
+                        // Legacy premium block without signature
+                        const block = this.parseHTMLElement(element);
+
+                        if (block && this.isPremiumBlock(block)) {
+                            if (this.isPremium) {
+                                // License active: allow load (grace for old content)
+                                blocks.push(block);
+                            } else {
+                                // License expired: lock it
+                                blocks.push({
+                                    type: 'premium-locked',
+                                    lockedType: block.type,
+                                    encrypted: btoa(JSON.stringify(block)),
+                                    note: 'License required (legacy content)'
+                                });
+                            }
+                        }
+                    }
+                    // Free block or locked placeholder
+                    else {
+                        const block = this.parseHTMLElement(element);
+                        if (block) blocks.push(block);
+                    }
                 });
 
                 this.data = blocks;
                 this.renderCanvas();
+                this.updateHiddenInput();
                 if (this.options.onChange) this.options.onChange(this.data);
                 return true;
             } catch (error) {
@@ -2444,6 +3059,16 @@
 
         parseHTMLElement(element) {
             const tagName = element.tagName.toLowerCase();
+
+            // Check if locked premium placeholder
+            if (element.classList.contains('ef-premium-placeholder')) {
+                const lockedType = element.dataset.lockedType;
+                return {
+                    type: 'premium-locked',
+                    lockedType: lockedType || 'unknown',
+                    note: 'Locked premium content'
+                };
+            }
 
             // Headings
             if (tagName === 'h2' || tagName === 'h3' || tagName === 'h4') {
@@ -2890,8 +3515,27 @@
 
         generateHTML(withWrapper = false) {
             let html = '';
+
             this.data.forEach(block => {
-                html += this.renderBlock(block);
+                if (this.isPremiumBlock(block)) {
+                    if (this.isPremium && this.premiumRenderer) {
+                        // Premium active: render dengan signature
+                        const blockData = JSON.stringify(block);
+                        const signature = this.generateSignature(blockData);
+                        const encodedData = btoa(unescape(encodeURIComponent(blockData)));
+
+                        const premiumHTML = this.premiumRenderer.render(block);
+                        html += `  <div class="ef-premium-wrapper" data-ef-premium="true" data-ef-signature="${signature}" data-ef-block="${encodedData}">\n`;
+                        html += premiumHTML;
+                        html += `  </div>\n`;
+                    } else {
+                        // License expired: locked placeholder
+                        html += this.renderLockedBlockHTML(block);
+                    }
+                } else {
+                    // Free component
+                    html += this.renderBlock(block);
+                }
             });
 
             if (withWrapper) {
@@ -2903,7 +3547,18 @@
         }
 
         renderBlock(block) {
-            // GENERAL COMPONENTS
+            // Check if premium block
+            if (this.isPremiumBlock(block)) {
+                if (this.isPremium && this.premiumRenderer) {
+                    // Premium active: delegate to premium renderer
+                    return this.premiumRenderer.render(block);
+                } else {
+                    // License expired: show locked placeholder
+                    return this.renderLockedBlockHTML(block);
+                }
+            }
+
+            // Base components rendering (existing code)
             if (block.tag === 'h2' || block.tag === 'h3' || block.tag === 'h4') {
                 return `  <${block.tag}>${this.escapeHtml(block.text)}</${block.tag}>\n`;
             }
@@ -2925,7 +3580,7 @@
                 return `  <pre class="ef-code-block"><code>${this.escapeHtml(block.text)}</code></pre>\n`;
             }
 
-            // DIVIDERS
+            // Dividers
             if (block.type === 'divider-line' || block.type === 'divider-dashed' ||
                 block.type === 'divider-dotted' || block.type === 'divider-gradient') {
                 return `  <div class="ef-divider ef-${block.type}"></div>\n`;
@@ -2936,7 +3591,7 @@
                 return `  <div class="ef-divider ef-divider-text">${this.escapeHtml(text)}</div>\n`;
             }
 
-            // PREMIUM: IMAGE & EMBED
+            // Image block
             if (block.type === 'image') {
                 const parts = block.text.split('|');
                 const imageUrl = parts[0] || '';
@@ -2950,6 +3605,7 @@
                 return html;
             }
 
+            // Embed block
             if (block.type === 'embed') {
                 const parts = block.text.split('|');
                 const embedType = parts[0] || 'youtube';
@@ -2982,275 +3638,60 @@
                 return html;
             }
 
-            // PREMIUM: TIP BLOCKS
-            if (block.type === 'tip-info' || block.type === 'tip-success' || block.type === 'tip-warning' ||
-                block.type === 'tip-danger' || block.type === 'tip-note' || block.type === 'tip-question' ||
-                block.type === 'tip-star' || block.type === 'tip-check') {
-                const lines = block.text.split('\n');
-                const title = lines[0] || '';
-                const content = lines.slice(1).join(' ').trim();
-                const iconMap = {
-                    'tip-info': 'info-circle', 'tip-success': 'check-circle', 'tip-warning': 'exclamation-triangle',
-                    'tip-danger': 'exclamation-circle', 'tip-note': 'sticky-note', 'tip-question': 'question-circle',
-                    'tip-star': 'star', 'tip-check': 'check-square'
-                };
-                const icon = iconMap[block.type] || 'lightbulb';
-                return `  <div class="ef-tip-block ef-${block.type}">\n    <div class="ef-tip-icon"><i class="fas fa-${icon}"></i></div>\n    <div class="ef-tip-content">\n      <strong>${this.escapeHtml(title)}</strong>\n      <p>${this.escapeHtml(content)}</p>\n    </div>\n  </div>\n`;
-            }
-
-            if (block.type === 'tip-quote') {
-                const lines = block.text.split('\n');
-                const label = lines[0] || 'Quote';
-                const content = lines[1] || '';
-                const author = lines[2] || '';
-                return `  <div class="ef-tip-block ef-tip-quote">\n    <div class="ef-tip-icon"><i class="fas fa-quote-left"></i></div>\n    <div class="ef-tip-content">\n      ${label !== 'Quote' ? `<small>${this.escapeHtml(label)}</small>\n      ` : ''}<blockquote>${this.escapeHtml(content)}</blockquote>\n      ${author ? `<cite>— ${this.escapeHtml(author)}</cite>` : ''}\n    </div>\n  </div>\n`;
-            }
-
-            if (block.type === 'tip-steps') {
-                const lines = block.text.split('\n');
-                const title = lines[0] || 'Quick Steps';
-                const steps = lines.slice(1).filter(s => s.trim());
-                let html = `  <div class="ef-tip-block ef-tip-steps">\n    <div class="ef-tip-icon"><i class="fas fa-list-ol"></i></div>\n    <div class="ef-tip-content">\n      <strong>${this.escapeHtml(title)}</strong>\n      <ol class="ef-steps-list">\n`;
-                steps.forEach(step => html += `        <li>${this.escapeHtml(step)}</li>\n`);
-                html += `      </ol>\n    </div>\n  </div>\n`;
-                return html;
-            }
-
-            // PREMIUM: CARDS
-            if (block.type === 'card-basic') {
-                const lines = block.text.split('\n');
-                const title = lines[0] || '';
-                const content = lines.slice(1).join(' ').trim();
-                return `  <div class="ef-card ef-card-basic">\n    <h4>${this.escapeHtml(title)}</h4>\n    <p>${this.escapeHtml(content)}</p>\n  </div>\n`;
-            }
-
-            if (block.type === 'card-image') {
-                const lines = block.text.split('\n');
-                const title = lines[0] || '';
-                const content = lines[1] || '';
-                const imageUrl = lines[2] || '';
-                return `  <div class="ef-card ef-card-image">\n    <img src="${this.escapeHtml(imageUrl)}" alt="${this.escapeHtml(title)}" class="ef-card-img">\n    <div class="ef-card-body">\n      <h4>${this.escapeHtml(title)}</h4>\n      <p>${this.escapeHtml(content)}</p>\n    </div>\n  </div>\n`;
-            }
-
-            if (block.type === 'card-icon-top') {
-                const lines = block.text.split('\n');
-                const icon = lines[0] || 'fas fa-star';
-                const title = lines[1] || '';
-                const content = lines[2] || '';
-                return `  <div class="ef-card ef-card-icon-top">\n    <div class="ef-card-icon-large"><i class="${this.escapeHtml(icon)}"></i></div>\n    <h4>${this.escapeHtml(title)}</h4>\n    <p>${this.escapeHtml(content)}</p>\n  </div>\n`;
-            }
-
-            if (block.type === 'card-hover' || block.type === 'card-bordered' || block.type === 'card-gradient') {
-                const lines = block.text.split('\n');
-                const title = lines[0] || '';
-                const content = lines.slice(1).join(' ').trim();
-                return `  <div class="ef-card ef-${block.type}">\n    <h4>${this.escapeHtml(title)}</h4>\n    <p>${this.escapeHtml(content)}</p>\n  </div>\n`;
-            }
-
-            if (block.type === 'card-stat') {
-                const lines = block.text.split('\n');
-                const parts = lines[0].split('|');
-                const number = parts[0] || '0';
-                const label = parts[1] || '';
-                const description = lines.slice(1).join(' ').trim();
-                return `  <div class="ef-card ef-card-stat">\n    <div class="ef-stat-number">${this.escapeHtml(number)}</div>\n    <div class="ef-stat-label">${this.escapeHtml(label)}</div>\n    ${description ? `<p class="ef-stat-desc">${this.escapeHtml(description)}</p>` : ''}\n  </div>\n`;
-            }
-
-            // PREMIUM: CARD GRIDS
-            if (block.type === 'card-grid-2col') {
-                const cards = block.text.split('\n').filter(c => c.trim());
-                let html = `  <div class="ef-card-grid ef-card-grid-2col">\n`;
-                cards.forEach(card => {
-                    const parts = card.split('|');
-                    html += `    <div class="ef-card">\n      <div class="ef-card-icon"><i class="${this.escapeHtml(parts[1] || 'fas fa-star')}"></i></div>\n      <h4>${this.escapeHtml(parts[0] || '')}</h4>\n      <p>${this.escapeHtml(parts[2] || '')}</p>\n    </div>\n`;
-                });
-                html += `  </div>\n`;
-                return html;
-            }
-
-            if (block.type === 'card-grid-3col') {
-                const cards = block.text.split('\n').filter(c => c.trim());
-                let html = `  <div class="ef-card-grid ef-card-grid-3col">\n`;
-                cards.forEach(card => {
-                    const parts = card.split('|');
-                    html += `    <div class="ef-card">\n      <div class="ef-card-icon"><i class="${this.escapeHtml(parts[1] || 'fas fa-star')}"></i></div>\n      <h4>${this.escapeHtml(parts[0] || '')}</h4>\n      <p>${this.escapeHtml(parts[2] || '')}</p>\n    </div>\n`;
-                });
-                html += `  </div>\n`;
-                return html;
-            }
-
-            if (block.type === 'card-grid-masonry') {
-                const cards = block.text.split('\n').filter(c => c.trim());
-                let html = `  <div class="ef-card-grid ef-card-grid-masonry">\n`;
-                cards.forEach(card => {
-                    const parts = card.split('|');
-                    const size = parts[2] || 'medium';
-                    html += `    <div class="ef-card ef-card-${size}">\n      <div class="ef-card-icon"><i class="${this.escapeHtml(parts[1] || 'fas fa-star')}"></i></div>\n      <h4>${this.escapeHtml(parts[0] || '')}</h4>\n      <p>${this.escapeHtml(parts[3] || '')}</p>\n    </div>\n`;
-                });
-                html += `  </div>\n`;
-                return html;
-            }
-
-            // PREMIUM: CTA BLOCKS
-            if (block.type === 'cta-center') {
-                const lines = block.text.split('\n').filter(l => l.trim());
-                const title = lines[0] || '';
-                const description = lines[1] || '';
-                const buttons = lines.slice(2);
-                let html = `  <div class="ef-cta-block ef-cta-center">\n    <h3>${this.escapeHtml(title)}</h3>\n    <p>${this.escapeHtml(description)}</p>\n    <div class="ef-cta-buttons">\n`;
-                buttons.forEach((btn, idx) => {
-                    const parts = btn.split('|');
-                    const isPrimary = idx === 0 ? ' ef-cta-btn-primary' : '';
-                    html += `      <a href="${this.escapeHtml(parts[1] || '#')}" class="ef-cta-btn${isPrimary}">${this.escapeHtml(parts[0] || '')}</a>\n`;
-                });
-                html += `    </div>\n  </div>\n`;
-                return html;
-            }
-
-            if (block.type === 'cta-split') {
-                const lines = block.text.split('\n').filter(l => l.trim());
-                const title = lines[0] || '';
-                const description = lines[1] || '';
-                const buttons = lines.slice(2);
-                let html = `  <div class="ef-cta-block ef-cta-split">\n    <div class="ef-cta-content">\n      <h3>${this.escapeHtml(title)}</h3>\n      <p>${this.escapeHtml(description)}</p>\n    </div>\n    <div class="ef-cta-buttons">\n`;
-                buttons.forEach((btn, idx) => {
-                    const parts = btn.split('|');
-                    const isPrimary = idx === 0 ? ' ef-cta-btn-primary' : '';
-                    html += `      <a href="${this.escapeHtml(parts[1] || '#')}" class="ef-cta-btn${isPrimary}">${this.escapeHtml(parts[0] || '')}</a>\n`;
-                });
-                html += `    </div>\n  </div>\n`;
-                return html;
-            }
-
-            if (block.type === 'cta-minimal') {
-                const lines = block.text.split('\n').filter(l => l.trim());
-                const btnParts = lines[2] ? lines[2].split('|') : ['', '#'];
-                return `  <div class="ef-cta-block ef-cta-minimal">\n    <h3>${this.escapeHtml(lines[0] || '')}</h3>\n    <p>${this.escapeHtml(lines[1] || '')}</p>\n    <a href="${this.escapeHtml(btnParts[1])}" class="ef-cta-btn ef-cta-btn-primary">${this.escapeHtml(btnParts[0])}</a>\n  </div>\n`;
-            }
-
-            if (block.type === 'cta-urgent') {
-                const lines = block.text.split('\n').filter(l => l.trim());
-                const title = lines[0] || '';
-                const description = lines[1] || '';
-                const buttons = lines.slice(2);
-                let html = `  <div class="ef-cta-block ef-cta-urgent">\n    <div class="ef-cta-badge">Limited Time</div>\n    <h3>${this.escapeHtml(title)}</h3>\n    <p>${this.escapeHtml(description)}</p>\n    <div class="ef-cta-buttons">\n`;
-                buttons.forEach((btn, idx) => {
-                    const parts = btn.split('|');
-                    const isPrimary = idx === 0 ? ' ef-cta-btn-primary' : '';
-                    html += `      <a href="${this.escapeHtml(parts[1] || '#')}" class="ef-cta-btn${isPrimary}">${this.escapeHtml(parts[0] || '')}</a>\n`;
-                });
-                html += `    </div>\n  </div>\n`;
-                return html;
-            }
-
-            if (block.type === 'cta-newsletter') {
-                const lines = block.text.split('\n').filter(l => l.trim());
-                const btnParts = lines[3] ? lines[3].split('|') : ['Subscribe', '#'];
-                return `  <div class="ef-cta-block ef-cta-newsletter">\n    <h3>${this.escapeHtml(lines[0] || '')}</h3>\n    <p>${this.escapeHtml(lines[1] || '')}</p>\n    <form class="ef-newsletter-form" action="${this.escapeHtml(btnParts[1])}" method="post">\n      <input type="email" class="ef-newsletter-input" placeholder="${this.escapeHtml(lines[2] || 'your@email.com')}" required>\n      <button type="submit" class="ef-cta-btn ef-cta-btn-primary">${this.escapeHtml(btnParts[0])}</button>\n    </form>\n  </div>\n`;
-            }
-
-            // PREMIUM: TABLES
-            if (block.type === 'table-basic' || block.type === 'table-striped' || block.type === 'table-comparison') {
-                const rows = block.text.split('\n').filter(r => r.trim());
-                if (rows.length > 0) {
-                    let html = `  <table class="ef-table ef-${block.type}">\n`;
-                    rows.forEach((row, idx) => {
-                        const cells = row.split('|').map(c => c.trim());
-                        if (idx === 0) {
-                            html += `    <thead>\n      <tr>\n`;
-                            cells.forEach(cell => html += `        <th>${this.escapeHtml(cell)}</th>\n`);
-                            html += `      </tr>\n    </thead>\n    <tbody>\n`;
-                        } else {
-                            html += `      <tr>\n`;
-                            cells.forEach(cell => html += `        <td>${this.escapeHtml(cell)}</td>\n`);
-                            html += `      </tr>\n`;
-                        }
-                    });
-                    html += `    </tbody>\n  </table>\n`;
-                    return html;
-                }
-            }
-
-            // PREMIUM: TIMELINE
-            if (block.type === 'timeline-vertical') {
-                const items = block.text.split('\n').filter(i => i.trim());
-                let html = `  <div class="ef-timeline ef-timeline-vertical">\n`;
-                items.forEach((item, idx) => {
-                    const parts = item.split('|');
-                    const position = idx % 2 === 0 ? 'left' : 'right';
-                    html += `    <div class="ef-timeline-item ef-timeline-${position}">\n      <div class="ef-timeline-marker"></div>\n      <div class="ef-timeline-content">\n        <div class="ef-timeline-date">${this.escapeHtml(parts[0] || '')}</div>\n        <h4>${this.escapeHtml(parts[1] || '')}</h4>\n        <p>${this.escapeHtml(parts[2] || '')}</p>\n      </div>\n    </div>\n`;
-                });
-                html += `  </div>\n`;
-                return html;
-            }
-
-            if (block.type === 'timeline-horizontal') {
-                const items = block.text.split('\n').filter(i => i.trim());
-                let html = `  <div class="ef-timeline ef-timeline-horizontal">\n`;
-                items.forEach(item => {
-                    const parts = item.split('|');
-                    html += `    <div class="ef-timeline-item">\n      <div class="ef-timeline-marker"></div>\n      <div class="ef-timeline-content">\n        <div class="ef-timeline-date">${this.escapeHtml(parts[0] || '')}</div>\n        <h4>${this.escapeHtml(parts[1] || '')}</h4>\n        <p>${this.escapeHtml(parts[2] || '')}</p>\n      </div>\n    </div>\n`;
-                });
-                html += `  </div>\n`;
-                return html;
-            }
-
-            // PREMIUM: ACCORDION
-            if (block.type === 'accordion-faq' || block.type === 'accordion-simple') {
-                const items = block.text.split('\n').filter(i => i.trim());
-                const icon = block.type === 'accordion-faq' ? 'question-circle' : 'chevron-right';
-                let html = `  <div class="ef-accordion ef-${block.type}">\n`;
-                items.forEach(item => {
-                    const parts = item.split('|');
-                    html += `    <div class="ef-accordion-item">\n      <div class="ef-accordion-header" onclick="this.parentElement.classList.toggle('ef-accordion-open')">\n        <i class="fas fa-${icon} ef-accordion-icon"></i>\n        <span>${this.escapeHtml(parts[0] || '')}</span>\n        <i class="fas fa-chevron-down ef-accordion-arrow"></i>\n      </div>\n      <div class="ef-accordion-content">\n        <p>${this.escapeHtml(parts[1] || '')}</p>\n      </div>\n    </div>\n`;
-                });
-                html += `  </div>\n`;
-                return html;
-            }
-
-            // PREMIUM: POLLS
-            if (block.type === 'poll-emoji' || block.type === 'poll-rating' || block.type === 'poll-vote') {
-                const lines = block.text.split('|');
-                const question = lines[0] || '';
-                const pollId = 'poll-' + Math.random().toString(36).substr(2, 9);
-                let html = `  <div class="ef-poll ef-${block.type}" id="${pollId}">\n    <div class="ef-poll-question">${this.escapeHtml(question)}</div>\n    <div class="ef-poll-options">\n`;
-                for (let i = 1; i < lines.length; i += 2) {
-                    if (lines[i] && lines[i + 1]) {
-                        html += `      <div class="ef-poll-option" onclick="this.parentElement.querySelectorAll('.ef-poll-option').forEach(o => o.classList.remove('ef-poll-selected')); this.classList.add('ef-poll-selected');">\n        <div class="ef-poll-option-value">${this.escapeHtml(lines[i])}</div>\n        <div class="ef-poll-option-label">${this.escapeHtml(lines[i + 1])}</div>\n      </div>\n`;
-                    }
-                }
-                html += `    </div>\n  </div>\n`;
-                return html;
-            }
-
             return '';
+        }
+
+        // Render locked premium block for expired license (HTML output)
+        renderLockedBlockHTML(block) {
+            return `  <div class="ef-premium-placeholder" data-locked-type="${block.type || block.lockedType}">
+                        <div class="ef-premium-placeholder-icon">
+                        <i class="fas fa-lock"></i>
+                        </div>
+                        <div class="ef-premium-placeholder-content">
+                        <p><strong>Premium Component</strong></p>
+                        <p>This content requires an active license to view</p>
+                        </div>
+                    </div>\n`;
         }
     }
 
     // ============================================
     // STATIC METHOD FOR PREMIUM REGISTRATION
     // ============================================
-    EfArticleBuilder.registerPremiumComponents = function (premiumData) {
+    EfArticleBuilder.registerPremiumComponents = function (premiumData, PremiumRendererClass) {
         if (!premiumData || !premiumData.templates) {
             console.error('Invalid premium components data');
             return;
         }
 
+        if (!PremiumRendererClass) {
+            console.error('PremiumRenderer class not provided');
+            return;
+        }
+
         activeEditors.forEach(editor => {
+            // Merge premium templates
             Object.assign(editor.templates, premiumData.templates);
             Object.assign(editor.componentGroups, premiumData.groups);
             Object.assign(editor.componentIcons, premiumData.icons);
             Object.assign(editor.componentLabels, premiumData.labels);
 
+            // 🔥 CRITICAL: Instantiate premium renderer
+            editor.premiumRenderer = new PremiumRendererClass(editor);
+
+            // Update UI sidebar
             if (editor.container.querySelector('.ef-components')) {
                 const componentsDiv = editor.container.querySelector('.ef-components');
                 componentsDiv.innerHTML = '<h3 class="ef-components-title">Komponen</h3>' + editor.getComponentsHTML();
                 editor.attachComponentPreviewEvents();
                 editor.initDragDrop();
             }
+
+            // Re-render canvas to apply premium rendering
+            editor.renderCanvas();
         });
 
-        console.log('✓ Premium components registered successfully');
+        console.log('✓ Premium components and renderer registered successfully');
     };
 
     // Export
