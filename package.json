@@ -1,7 +1,7 @@
 {
   "name": "ef-article-builder-code-free",
   "type": "module",
-  "version": "1.0.0",
+  "version": "1.2.0",
   "dependencies": {
     "@semantic-release/changelog": "^6.0.3",
     "@semantic-release/commit-analyzer": "^13.0.1",
