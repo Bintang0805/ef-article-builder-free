@@ -1,3 +1,10 @@
+# [1.3.0](https://github.com/Bintang0805/ef-article-builder-free/compare/v1.2.0...v1.3.0) (2025-10-16)
+
+
+### Features
+
+* **css:** refactor article builder styles with organized structure ([610eaac](https://github.com/Bintang0805/ef-article-builder-free/commit/610eaaca99599ae922d062e4bdab445e07809030))
+
 # [1.2.0](https://github.com/Bintang0805/ef-article-builder-code/compare/v1.1.0...v1.2.0) (2025-10-12)
 
 
