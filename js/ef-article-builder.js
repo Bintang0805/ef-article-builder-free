@@ -1,6 +1,6 @@
 /**
  * EF Article Builder - Complete Bundle
- * Version: 1.2.0
+ * Version: 2.0.0
  * Single file with dynamic premium component loading
  * License: MIT (Free version) / Commercial (Premium version)
  */
@@ -27,6 +27,8 @@
 
             'image': { tag: 'div', type: 'image', text: 'https://placehold.co/200x100|Image Title|This is an image caption', class: '', layout: 'column' },
             'embed': { tag: 'div', type: 'embed', text: 'youtube|https://www.youtube.com/watch?v=jNQXAC9IVRw|Video Title (Optional)', class: '', layout: 'column' },
+            'link': { tag: 'a', type: 'link', text: 'Read More|https://example.com|_blank|fas fa-external-link-alt', class: '', layout: 'column' },
+            'table-basic': { tag: 'table', type: 'table-basic', text: 'Feature|Basic|Pro\nPrice|$9|$29\nUsers|1|5\nStorage|10GB|100GB', class: '', layout: 'column' },
 
             // Dividers
             'divider-line': { tag: 'div', type: 'divider-line', text: '', class: '', layout: 'column' },
@@ -38,15 +40,18 @@
 
         groups: {
             'General': ['h2', 'h3', 'h4', 'p', 'p-large', 'ol', 'ul', 'code'],
-            'Media': ['image', 'embed'],
+            'Media': ['image', 'embed', 'link'],
+            'Tables': ['table-basic'],
             'Dividers': ['divider-line', 'divider-dashed', 'divider-dotted', 'divider-gradient', 'divider-text']
         },
 
         icons: {
-            h2: 'heading', h3: 'heading', h4: 'heading', p: 'paragraph', 'p-large': 'text-height',
+            h2: 'heading', h3: 'align-left', h4: 'paragraph', p: 'p', 'p-large': 'text-height',
             ol: 'list-ol', ul: 'list-ul', code: 'code',
             'image': 'image',
             'embed': 'video',
+            'link': 'link',
+            'table-basic': 'table',
             'divider-line': 'minus', 'divider-dashed': 'grip-lines', 'divider-dotted': 'ellipsis-h',
             'divider-gradient': 'stream', 'divider-text': 'asterisk'
         },
@@ -56,6 +61,8 @@
             ol: 'Ordered List', ul: 'Unordered List', code: 'Code Block',
             'image': 'Image Block',
             'embed': 'Embed Media',
+            'link': 'Link Card',
+            'table-basic': 'Basic Table',
             'divider-line': 'Solid Line', 'divider-dashed': 'Dashed Line', 'divider-dotted': 'Dotted Line',
             'divider-gradient': 'Gradient Line', 'divider-text': 'Text Divider'
         }
@@ -81,7 +88,7 @@
                 compactButtonText: options.compactButtonText || 'Open Editor',
                 components: options.components || ['all'],
                 licenseKey: options.licenseKey || null,
-                apiEndpoint: 'https://api.development.test:8000/api/validate-license',
+                apiEndpoint: 'https://api.ef-code.com/api/license/validate-license',
                 onSave: options.onSave || null,
                 onChange: options.onChange || null,
                 onLicenseValidated: options.onLicenseValidated || null,
@@ -106,6 +113,8 @@
 
             this.currentEditIndex = -1;
             this.livePreviewActive = false;
+            this.editModeActive = false;
+            this.isDragging = false;
             this.isCompactMode = this.options.displayMode === 'compact';
             this.editorVisible = !this.isCompactMode;
 
@@ -165,19 +174,19 @@
 
         async validateAndLoadPremium(licenseKey) {
             // ⚠️ TESTING MODE FLAG
-            const TESTING_MODE = true; // Set false untuk production
+            // const TESTING_MODE = true; // Set false untuk production
 
-            if (TESTING_MODE) {
-                console.warn('🧪 TESTING MODE: Loading premium from local file');
-                try {
-                    await this.loadPremiumScript('file:///home/muhammad-ikhsan-bintang/My%20Workspace/ef-code/sources/ef-article-builder-code/premium-code/ef-article-builder-pro.js');
-                    this.isPremium = true;
-                    return true;
-                } catch (error) {
-                    console.error('✗ Failed to load premium:', error);
-                    return false;
-                }
-            }
+            // if (TESTING_MODE) {
+            //     console.warn('🧪 TESTING MODE: Loading premium from local file');
+            //     try {
+            //         await this.loadPremiumScript('file:///home/muhammad-ikhsan-bintang/My%20Workspace/ef-code/sources/ef-article-builder-code/premium-code/ef-article-builder-pro.js');
+            //         this.isPremium = true;
+            //         return true;
+            //     } catch (error) {
+            //         console.error('✗ Failed to load premium:', error);
+            //         return false;
+            //     }
+            // }
 
             // PRODUCTION: API Validation
             try {
@@ -887,6 +896,7 @@
                     const action = btn.dataset.action;
                     switch (action) {
                         case 'toggle-live-preview': this.toggleLivePreview(); break;
+                        case 'toggle-edit-mode': this.toggleEditMode(); break;
                         case 'preview': this.showPreview(); break;
                         case 'json': this.showJSON(); break;
                         case 'html': this.showHTML(); break;
@@ -969,6 +979,80 @@
             document.addEventListener('keydown', (e) => {
                 if (e.key === 'Escape') this.closeModal();
             });
+
+            // Mobile components toggle
+            const setupMobileToggle = () => {
+                const componentsPanel = this.container.querySelector('.ef-components');
+                if (!componentsPanel || window.innerWidth > 767) return;
+
+                // Create explicit toggle button
+                const existingToggle = this.container.querySelector('.ef-mobile-toggle-btn');
+                if (existingToggle) existingToggle.remove();
+
+                const toggleBtn = document.createElement('button');
+                toggleBtn.className = 'ef-mobile-toggle-btn';
+                toggleBtn.innerHTML = '<i class="fas fa-box"></i> Components';
+                toggleBtn.style.cssText = `
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background: linear-gradient(135deg, #6366f1, #8b5cf6);
+        color: white;
+        border: none;
+        padding: 1rem 1.5rem;
+        border-radius: 50px;
+        font-weight: 600;
+        font-size: 0.875rem;
+        box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+        z-index: 999;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: all 0.3s ease;
+    `;
+
+                toggleBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const isOpen = componentsPanel.classList.toggle('ef-mobile-open');
+                    toggleBtn.innerHTML = isOpen ? '<i class="fas fa-times"></i> Close' : '<i class="fas fa-box"></i> Components';
+                });
+
+                document.body.appendChild(toggleBtn);
+
+                // Close when clicking outside
+                document.addEventListener('click', (e) => {
+                    if (window.innerWidth > 767) return;
+                    if (!componentsPanel.contains(e.target) && !toggleBtn.contains(e.target)) {
+                        componentsPanel.classList.remove('ef-mobile-open');
+                        toggleBtn.innerHTML = '<i class="fas fa-box"></i> Components';
+                    }
+                });
+
+                // Close when dragging starts
+                componentsPanel.addEventListener('dragstart', () => {
+                    setTimeout(() => {
+                        componentsPanel.classList.remove('ef-mobile-open');
+                        toggleBtn.innerHTML = '<i class="fas fa-box"></i> Components';
+                    }, 300);
+                });
+            };
+
+            setupMobileToggle();
+
+            // Re-initialize on window resize
+            let resizeTimer;
+            window.addEventListener('resize', () => {
+                clearTimeout(resizeTimer);
+                resizeTimer = setTimeout(() => {
+                    const componentsPanel = this.container.querySelector('.ef-components');
+                    if (componentsPanel) {
+                        if (window.innerWidth > 767) {
+                            componentsPanel.classList.remove('ef-mobile-open');
+                        }
+                    }
+                }, 250);
+            });
         }
 
         // ============================================
@@ -1000,6 +1084,7 @@
                 }
 
                 component.addEventListener('dragstart', (e) => {
+                    this.isDragging = true;
                     this.dragState.isNewComponent = true;
                     this.dragState.isSorting = false;
                     this.dragState.draggedType = e.target.dataset.type;
@@ -1009,6 +1094,7 @@
                 });
 
                 component.addEventListener('dragend', () => {
+                    this.isDragging = false;
                     this.dragState.isNewComponent = false;
                     this.dragState.draggedType = null;
                     this.dragState.dropPosition = null;
@@ -1137,7 +1223,29 @@
             const HOVER_DELAY = 300;
 
             components.forEach(item => {
+                // Double-click to add component
+                item.addEventListener('dblclick', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+
+                    // Check if locked
+                    if (item.classList.contains('ef-premium-locked')) {
+                        this.showPremiumRequiredModal();
+                        return;
+                    }
+
+                    const type = item.dataset.type;
+                    this.addBlock(type);
+
+                    // Visual feedback
+                    item.style.transform = 'scale(0.95)';
+                    setTimeout(() => {
+                        item.style.transform = '';
+                    }, 150);
+                });
+
                 item.addEventListener('mouseenter', () => {
+                    if (this.isDragging) return;
                     const type = item.dataset.type;
                     if (hoverTimer) clearTimeout(hoverTimer);
                     hoverTimer = setTimeout(() => {
@@ -1402,6 +1510,10 @@
                 document.body.classList.add('ef-modal-open');
                 this.attachEditFormEvents(block, formContainer);
             }
+
+            setTimeout(() => {
+                this.autoFocusFirstField(formContainer);
+            }, 100);
         }
 
         getLockedEditForm(block) {
@@ -1453,12 +1565,21 @@
 
             if (block.tag === 'ol' || block.tag === 'ul') {
                 const items = block.text.split('\n').filter(i => i.trim());
-                let html = '<div class="ef-form-group"><label>Item List</label><div id="ef-list-items">';
-                items.forEach((item) => {
-                    html += `<div class="ef-list-item"><input type="text" class="ef-form-control" value="${this.escapeHtml(item)}" data-list-item><button class="ef-btn ef-btn-sm ef-btn-danger" onclick="this.parentElement.remove()"><i class="fas fa-trash"></i></button></div>`;
-                });
-                html += '</div><button class="ef-btn ef-btn-sm" id="ef-add-list-item"><i class="fas fa-plus"></i> Tambah Item</button></div>';
-                return html;
+                const itemsText = items.join('\n');
+
+                return `<div class="ef-form-group">
+                            <label>List Items (one per line)</label>
+                            <textarea class="ef-form-control" id="ef-list-textarea" rows="8" placeholder="Enter items (one per line):\nItem 1\nItem 2\nItem 3">${this.escapeHtml(itemsText)}</textarea>
+                            <small style="color: rgba(255,255,255,0.6); font-size: 0.8125rem; margin-top: 0.5rem; display: block;">
+                                <i class="fas fa-info-circle"></i> Paste multiple lines from Word/Notepad or type manually. Empty lines will be skipped.
+                            </small>
+                        </div>
+                        <div class="ef-form-group">
+                            <label style="font-weight: 600; margin-bottom: 0.75rem;">Preview:</label>
+                            <div id="ef-list-preview" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 1rem; min-height: 100px;">
+                                ${this.getListPreviewHTML(items, block.tag)}
+                            </div>
+                        </div>`;
             }
 
             if (block.type === 'code-block') {
@@ -1715,7 +1836,7 @@
 
             // REPLACE block table di getEditForm() dengan:
 
-            if (block.type === 'table-basic' || block.type === 'table-striped' || block.type === 'table-comparison') {
+            if (block.type === 'table-striped' || block.type === 'table-comparison') {
                 const rows = block.text.split('\n').filter(r => r.trim());
                 let html = `<div class="ef-form-group">
                                 <label>Table Data</label>
@@ -1764,6 +1885,36 @@
                             </div>
                         </div>`;
                 return html;
+            }
+
+            if (block.type === 'link') {
+                const parts = block.text.split('|');
+                const text = parts[0] || '';
+                const url = parts[1] || '';
+                const target = parts[2] || '_self';
+                const icon = parts[3] || '';
+
+                return `<div class="ef-form-group">
+                            <label>Link Text</label>
+                            <input type="text" class="ef-form-control" id="ef-link-text" value="${this.escapeHtml(text)}" placeholder="Read More">
+                        </div>
+                        <div class="ef-form-group">
+                            <label>URL</label>
+                            <input type="url" class="ef-form-control" id="ef-link-url" value="${this.escapeHtml(url)}" placeholder="https://example.com">
+                        </div>
+                        <div class="ef-form-group">
+                            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                                <input type="checkbox" id="ef-link-target" ${target === '_blank' ? 'checked' : ''} style="width: auto; cursor: pointer;">
+                                <span>Open in new tab</span>
+                            </label>
+                        </div>
+                        <div class="ef-form-group">
+                            <label>Icon (Optional)</label>
+                            <input type="text" class="ef-form-control" id="ef-link-icon" value="${this.escapeHtml(icon)}" placeholder="fas fa-external-link-alt">
+                            <small style="color: rgba(255,255,255,0.6); font-size: 0.8125rem; margin-top: 0.5rem; display: block;">
+                                <i class="fas fa-info-circle"></i> Leave empty for no icon. Use FontAwesome class names.
+                            </small>
+                        </div>`;
             }
 
             if (block.type === 'timeline-vertical' || block.type === 'timeline-horizontal') {
@@ -1932,6 +2083,57 @@
                         </div>`;
             }
 
+            if (block.type === 'table-basic') {
+                const rows = block.text.split('\n').filter(r => r.trim());
+                let html = `<div class="ef-form-group">
+                    <label>Table Data</label>
+                    <div style="background: rgba(255,255,255,0.05); padding: 1rem; border-radius: 8px; margin-bottom: 0.75rem; border: 1px solid rgba(255,255,255,0.1);">
+                        <p style="color: rgba(255,255,255,0.7); font-size: 0.875rem; margin-bottom: 0.5rem;">
+                            <i class="fas fa-info-circle"></i> Baris pertama akan menjadi header. Scroll horizontal jika kolom banyak.
+                        </p>
+                    </div>
+                    <div id="ef-table-rows">`;
+
+                rows.forEach((row, idx) => {
+                    const cells = row.split('|');
+                    let cellsHtml = '';
+                    cells.forEach((cell, cellIdx) => {
+                        cellsHtml += `<div class="ef-form-group ef-table-cell-input">
+                            <label>
+                                ${idx === 0 ? 'Header' : 'Cell'} ${cellIdx + 1}
+                            </label>
+                            <input type="text" class="ef-form-control" data-table-cell value="${this.escapeHtml(cell.trim())}" placeholder="Cell ${cellIdx + 1}">
+                        </div>`;
+                    });
+
+                    html += `<div class="ef-table-row">
+                                <div class="ef-table-row-header">
+                                    <span>${idx === 0 ? '📋 Header Row' : `📄 Row ${idx}`}</span>
+                                    <button class="ef-btn ef-btn-sm ef-btn-danger" onclick="this.closest('.ef-table-row').remove()">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                                <div class="ef-table-row-cells-wrapper">
+                                    <div class="ef-table-row-cells">
+                                        ${cellsHtml}
+                                    </div>
+                                </div>
+                            </div>`;
+                });
+
+                html += `</div>
+                            <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                                <button class="ef-btn ef-btn-sm" id="ef-add-table-row">
+                                    <i class="fas fa-plus"></i> Tambah Baris
+                                </button>
+                                <button class="ef-btn ef-btn-sm ef-btn-secondary" id="ef-add-table-column">
+                                    <i class="fas fa-plus"></i> Tambah Kolom
+                                </button>
+                            </div>
+                        </div>`;
+                return html;
+            }
+
             if (block.type === 'divider-line' || block.type === 'divider-dashed' ||
                 block.type === 'divider-dotted' || block.type === 'divider-gradient') {
                 return `<div class="ef-form-group">
@@ -2013,15 +2215,17 @@
         }
 
         attachEditFormEvents(block, container) {
-            const addListBtn = container.querySelector('#ef-add-list-item');
-            if (addListBtn) {
-                addListBtn.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    const listContainer = container.querySelector('#ef-list-items');
-                    const newItem = document.createElement('div');
-                    newItem.className = 'ef-list-item';
-                    newItem.innerHTML = `<input type="text" class="ef-form-control" data-list-item><button class="ef-btn ef-btn-sm ef-btn-danger" onclick="this.parentElement.remove()"><i class="fas fa-trash"></i></button>`;
-                    listContainer.appendChild(newItem);
+            // List textarea real-time preview
+            const listTextarea = container.querySelector('#ef-list-textarea');
+            const listPreview = container.querySelector('#ef-list-preview');
+            if (listTextarea && listPreview) {
+                listTextarea.addEventListener('input', (e) => {
+                    const text = e.target.value;
+                    const items = text.split('\n')
+                        .map(line => line.trim())
+                        .filter(line => line.length > 0);
+
+                    listPreview.innerHTML = this.getListPreviewHTML(items, block.tag);
                 });
             }
 
@@ -2116,7 +2320,6 @@
                 });
             }
 
-            // UPDATE addTableRowBtn (ganti yang lama):
             const addTableRowBtn = container.querySelector('#ef-add-table-row');
             if (addTableRowBtn) {
                 addTableRowBtn.addEventListener('click', (e) => {
@@ -2128,20 +2331,25 @@
 
                     let cellsHtml = '';
                     for (let i = 0; i < colCount; i++) {
-                        cellsHtml += `<div class="ef-form-group" style="flex: 1; margin-bottom: 0; margin-right: 0.5rem;">
-                                        <label style="font-size: 0.75rem; margin-bottom: 0.25rem; color: rgba(255,255,255,0.7);">Cell ${i + 1}</label>
-                                        <input type="text" class="ef-form-control" data-table-cell placeholder="Cell ${i + 1}">
-                                    </div>`;
+                        cellsHtml += `<div class="ef-form-group ef-table-cell-input">
+                            <label>Cell ${i + 1}</label>
+                            <input type="text" class="ef-form-control" data-table-cell placeholder="Cell ${i + 1}">
+                        </div>`;
                     }
 
                     const newRow = document.createElement('div');
                     newRow.className = 'ef-table-row';
-                    newRow.style.cssText = 'background: rgba(255,255,255,0.03); padding: 0.75rem; border-radius: 8px; margin-bottom: 0.75rem; border: 1px solid rgba(255,255,255,0.1);';
-                    newRow.innerHTML = `<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
-                                            <span style="color: rgba(255,255,255,0.5); font-size: 0.875rem; font-weight: 600;">📄 Row ${rowCount}</span>
-                                            <button class="ef-btn ef-btn-sm ef-btn-danger" onclick="this.closest('.ef-table-row').remove()"><i class="fas fa-trash"></i></button>
-                                        </div>
-                                        <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">${cellsHtml}</div>`;
+                    newRow.innerHTML = `<div class="ef-table-row-header">
+                                <span>📄 Row ${rowCount}</span>
+                                <button class="ef-btn ef-btn-sm ef-btn-danger" onclick="this.closest('.ef-table-row').remove()">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                            <div class="ef-table-row-cells-wrapper">
+                                <div class="ef-table-row-cells">
+                                    ${cellsHtml}
+                                </div>
+                            </div>`;
                     tableContainer.appendChild(newRow);
                 });
             }
@@ -2152,15 +2360,14 @@
                     e.preventDefault();
                     const tableRows = container.querySelectorAll('.ef-table-row');
                     tableRows.forEach((row, rowIdx) => {
-                        const cellsContainer = row.querySelector('div[style*="display: flex"]');
+                        const cellsContainer = row.querySelector('.ef-table-row-cells');
                         const currentColCount = row.querySelectorAll('[data-table-cell]').length;
                         const newCell = document.createElement('div');
-                        newCell.className = 'ef-form-group';
-                        newCell.style.cssText = 'flex: 1; margin-bottom: 0; margin-right: 0.5rem;';
-                        newCell.innerHTML = `<label style="font-size: 0.75rem; margin-bottom: 0.25rem; color: rgba(255,255,255,0.7);">
-                                                ${rowIdx === 0 ? 'Header' : 'Cell'} ${currentColCount + 1}
-                                            </label>
-                                            <input type="text" class="ef-form-control" data-table-cell placeholder="Cell ${currentColCount + 1}">`;
+                        newCell.className = 'ef-form-group ef-table-cell-input';
+                        newCell.innerHTML = `<label>
+                                    ${rowIdx === 0 ? 'Header' : 'Cell'} ${currentColCount + 1}
+                                </label>
+                                <input type="text" class="ef-form-control" data-table-cell placeholder="Cell ${currentColCount + 1}">`;
                         cellsContainer.appendChild(newCell);
                     });
                 });
@@ -2348,8 +2555,13 @@
                 const textarea = modal.querySelector('#ef-edit-text');
                 if (textarea) block.text = textarea.value;
             } else if (block.tag === 'ol' || block.tag === 'ul') {
-                const items = [...modal.querySelectorAll('[data-list-item]')].map(input => input.value.trim()).filter(v => v);
-                block.text = items.join('\n');
+                const textarea = modal.querySelector('#ef-list-textarea');
+                if (textarea) {
+                    const items = textarea.value.split('\n')
+                        .map(line => line.trim())
+                        .filter(line => line.length > 0);
+                    block.text = items.join('\n');
+                }
             }
 
             // DIVIDERS
@@ -2372,6 +2584,26 @@
                 const caption = modal.querySelector('#ef-embed-caption');
                 if (embedType && url && caption) {
                     block.text = embedType.value + '|' + url.value.trim() + '|' + caption.value.trim();
+                }
+            } else if (block.type === 'table-basic') {
+                const rows = [];
+                const rowElements = modal.querySelectorAll('.ef-table-row');
+                rowElements.forEach(row => {
+                    const cells = [];
+                    const cellInputs = row.querySelectorAll('[data-table-cell]');
+                    cellInputs.forEach(input => cells.push(input.value.trim()));
+                    if (cells.length > 0 && cells.some(c => c)) rows.push(cells.join('|'));
+                });
+                block.text = rows.join('\n');
+            } else if (block.type === 'link') {
+                const text = modal.querySelector('#ef-link-text');
+                const url = modal.querySelector('#ef-link-url');
+                const target = modal.querySelector('#ef-link-target');
+                const icon = modal.querySelector('#ef-link-icon');
+
+                if (text && url && target && icon) {
+                    const targetValue = target.checked ? '_blank' : '_self';
+                    block.text = `${text.value.trim()}|${url.value.trim()}|${targetValue}|${icon.value.trim()}`;
                 }
             } else if (block.type === 'tip-info' || block.type === 'tip-success' || block.type === 'tip-warning' ||
                 block.type === 'tip-danger' || block.type === 'tip-note' || block.type === 'tip-question' ||
@@ -2460,7 +2692,7 @@
                 if (title && desc && placeholder && btnText && btnUrl) {
                     block.text = title.value + '\n' + desc.value + '\n' + placeholder.value + '\n' + btnText.value + '|' + btnUrl.value;
                 }
-            } else if (block.type === 'table-basic' || block.type === 'table-striped' || block.type === 'table-comparison') {
+            } else if (block.type === 'table-striped' || block.type === 'table-comparison') {
                 const rows = [];
                 const rowElements = modal.querySelectorAll('.ef-table-row');
                 rowElements.forEach(row => {
@@ -2631,6 +2863,9 @@
                 livePreview.innerHTML = `
                     <div class="ef-live-preview-header">
                         <h3><i class="fas fa-eye"></i> Live Preview</h3>
+                        <button class="ef-btn ef-btn-sm ef-btn-edit-mode" data-action="toggle-edit-mode">
+                            <i class="fas fa-eye"></i> Preview Mode
+                        </button>
                     </div>
                     <div class="ef-live-preview-content ef-preview-container"></div>
                 `;
@@ -2669,6 +2904,114 @@
 
             livePreviewContent.innerHTML = html;
             this.applyContentTheme(livePreviewContent);
+
+            // Re-attach handlers if edit mode is active
+            if (this.editModeActive) {
+                setTimeout(() => {
+                    this.attachLivePreviewEditHandlers();
+                }, 100);
+            } else {
+                // Always attach double-click handlers
+                setTimeout(() => {
+                    const livePreviewContent = this.container.querySelector('.ef-live-preview-content');
+                    if (livePreviewContent) {
+                        const blocks = livePreviewContent.children;
+                        Array.from(blocks).forEach((block, index) => {
+                            if (index < this.data.length) {
+                                block.dataset.livePreviewIndex = index;
+                                block.addEventListener('dblclick', this.handleLivePreviewDoubleClick.bind(this), true);
+                            }
+                        });
+                    }
+                }, 100);
+            }
+        }
+
+        toggleEditMode() {
+            this.editModeActive = !this.editModeActive;
+
+            const toggleBtn = this.container.querySelector('[data-action="toggle-edit-mode"]');
+            const livePreviewContent = this.container.querySelector('.ef-live-preview-content');
+
+            if (!toggleBtn || !livePreviewContent) return;
+
+            if (this.editModeActive) {
+                // Edit Mode ON
+                toggleBtn.innerHTML = '<i class="fas fa-pen"></i> Edit Mode';
+                toggleBtn.classList.add('ef-btn-active');
+                livePreviewContent.classList.add('ef-edit-mode-active');
+
+                // Add click handlers to blocks
+                this.attachLivePreviewEditHandlers();
+            } else {
+                // Preview Mode (Edit Mode OFF)
+                toggleBtn.innerHTML = '<i class="fas fa-eye"></i> Preview Mode';
+                toggleBtn.classList.remove('ef-btn-active');
+                livePreviewContent.classList.remove('ef-edit-mode-active');
+
+                // Remove click handlers
+                this.removeLivePreviewEditHandlers();
+            }
+        }
+
+        attachLivePreviewEditHandlers() {
+            const livePreviewContent = this.container.querySelector('.ef-live-preview-content');
+            if (!livePreviewContent) return;
+
+            // Add data-index to each rendered block
+            const blocks = livePreviewContent.children;
+            Array.from(blocks).forEach((block, index) => {
+                if (index < this.data.length) {
+                    block.dataset.livePreviewIndex = index;
+                    block.classList.add('ef-live-preview-editable');
+
+                    // Single click handler
+                    block.addEventListener('click', this.handleLivePreviewClick.bind(this), true);
+
+                    // Double click handler (always works, even in preview mode)
+                    block.addEventListener('dblclick', this.handleLivePreviewDoubleClick.bind(this), true);
+                }
+            });
+        }
+
+        removeLivePreviewEditHandlers() {
+            const livePreviewContent = this.container.querySelector('.ef-live-preview-content');
+            if (!livePreviewContent) return;
+
+            const blocks = livePreviewContent.querySelectorAll('[data-live-preview-index]');
+            blocks.forEach(block => {
+                block.classList.remove('ef-live-preview-editable');
+                block.removeEventListener('click', this.handleLivePreviewClick.bind(this), true);
+                // Keep double-click handler (always active)
+            });
+        }
+
+        handleLivePreviewClick(e) {
+            if (!this.editModeActive) return;
+
+            e.preventDefault();
+            e.stopPropagation();
+
+            const block = e.currentTarget;
+            const index = parseInt(block.dataset.livePreviewIndex);
+
+            if (!isNaN(index) && index >= 0 && index < this.data.length) {
+                this.currentEditIndex = index;
+                this.showEditModal();
+            }
+        }
+
+        handleLivePreviewDoubleClick(e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            const block = e.currentTarget;
+            const index = parseInt(block.dataset.livePreviewIndex);
+
+            if (!isNaN(index) && index >= 0 && index < this.data.length) {
+                this.currentEditIndex = index;
+                this.showEditModal();
+            }
         }
 
         copyCode() {
@@ -2788,9 +3131,55 @@
             return text.replace(/[&<>"']/g, m => map[m]);
         }
 
+        getListPreviewHTML(items, tag) {
+            if (items.length === 0) {
+                return '<p style="color: rgba(255,255,255,0.4); font-style: italic; margin: 0;">No items yet. Type above to see preview.</p>';
+            }
+
+            const listType = tag === 'ol' ? 'ol' : 'ul';
+            let html = `<${listType} style="margin: 0; padding-left: 1.5rem; color: var(--ef-text-secondary);">`;
+            items.forEach(item => {
+                html += `<li style="margin-bottom: 0.5rem;">${this.escapeHtml(item)}</li>`;
+            });
+            html += `</${listType}>`;
+            return html;
+        }
+
+        autoFocusFirstField(container) {
+            if (!container) return;
+
+            // Priority: textarea > input[type="text"] > input[type="url"] > input
+            const focusableSelectors = [
+                'textarea.ef-form-control',
+                'input[type="text"].ef-form-control',
+                'input[type="url"].ef-form-control',
+                'input.ef-form-control'
+            ];
+
+            for (const selector of focusableSelectors) {
+                const field = container.querySelector(selector);
+                if (field && !field.disabled && !field.readOnly) {
+                    field.focus();
+
+                    // Select all text if it has value
+                    if (field.value && field.value.trim().length > 0) {
+                        if (field.setSelectionRange) {
+                            field.setSelectionRange(0, field.value.length);
+                        } else if (field.select) {
+                            field.select();
+                        }
+                    }
+
+                    return; // Stop after first field
+                }
+            }
+        }
+
         // Signature generation for anti-duplicate
         generateSignature(blockData) {
-            const payload = `${this.signatureSecret}|${Date.now()}|${blockData}`;
+            // ✅ FIX: Remove timestamp untuk consistency
+            // Signature hanya based on secret + data, bukan waktu
+            const payload = `${this.signatureSecret}|${blockData}`;
             return this.simpleHash(payload);
         }
 
@@ -2948,36 +3337,71 @@
                 const children = Array.from(container.children);
 
                 children.forEach(element => {
-                    // Check if premium wrapper with signature
+                    // 🔥 FIX: Check if premium wrapper with signature
                     if (element.classList.contains('ef-premium-wrapper') &&
                         element.dataset.efPremium === 'true') {
 
                         const signature = element.dataset.efSignature;
                         const encodedBlock = element.dataset.efBlock;
 
+                        if (!encodedBlock) {
+                            console.warn('Premium wrapper without encoded block data');
+                            return;
+                        }
+
                         try {
-                            // Decode block data
-                            const blockData = decodeURIComponent(escape(atob(encodedBlock)));
+                            // 🔥 FIX: Proper decoding
+                            // Base64 decode → URI decode → JSON parse
+                            const decodedString = atob(encodedBlock);
+                            const blockData = decodedString; // Already a valid JSON string
                             const block = JSON.parse(blockData);
 
                             // Validate signature
                             const expectedSignature = this.generateSignature(blockData);
 
-                            if (signature === expectedSignature && this.isPremium) {
-                                // Valid signature + active license: load full block
-                                blocks.push(block);
+                            if (signature === expectedSignature) {
+                                // Valid signature
+                                if (this.isPremium) {
+                                    // Active license: load full block
+                                    blocks.push(block);
+                                    console.log('✓ Premium block loaded:', block.type);
+                                } else {
+                                    // License expired: lock it
+                                    blocks.push({
+                                        type: 'premium-locked',
+                                        lockedType: block.type,
+                                        encrypted: encodedBlock,
+                                        signature: signature, // Keep signature for future unlock
+                                        note: 'License required'
+                                    });
+                                    console.warn('⚠ Premium block locked (no license):', block.type);
+                                }
                             } else {
-                                // Invalid signature OR license expired: lock it
+                                // Invalid signature: security issue
+                                console.error('✗ Invalid signature for premium block');
                                 blocks.push({
                                     type: 'premium-locked',
-                                    lockedType: block.type,
+                                    lockedType: block.type || 'unknown',
                                     encrypted: encodedBlock,
-                                    note: signature !== expectedSignature ? 'Invalid signature' : 'License required'
+                                    note: 'Invalid signature (security check failed)'
                                 });
                             }
                         } catch (e) {
                             console.error('Failed to parse premium block:', e);
-                            // Skip corrupted block
+                            console.error('EncodedBlock:', encodedBlock);
+                            // Try fallback: parse inner element directly
+                            const fallbackBlock = this.parseHTMLElement(element.firstElementChild || element);
+                            if (fallbackBlock) {
+                                if (this.isPremium) {
+                                    blocks.push(fallbackBlock);
+                                } else {
+                                    blocks.push({
+                                        type: 'premium-locked',
+                                        lockedType: fallbackBlock.type,
+                                        note: 'License required (fallback parse)'
+                                    });
+                                }
+                            }
                         }
                     }
                     // Check if old premium block (no wrapper, no signature)
@@ -2989,6 +3413,7 @@
                             if (this.isPremium) {
                                 // License active: allow load (grace for old content)
                                 blocks.push(block);
+                                console.log('✓ Legacy premium block loaded:', block.type);
                             } else {
                                 // License expired: lock it
                                 blocks.push({
@@ -2997,20 +3422,31 @@
                                     encrypted: btoa(JSON.stringify(block)),
                                     note: 'License required (legacy content)'
                                 });
+                                console.warn('⚠ Legacy premium block locked:', block.type);
                             }
                         }
                     }
-                    // Free block or locked placeholder
+                    // Free block or other content
                     else {
                         const block = this.parseHTMLElement(element);
-                        if (block) blocks.push(block);
+                        if (block) {
+                            blocks.push(block);
+                            console.log('✓ Free block loaded:', block.tag || block.type);
+                        }
                     }
                 });
+
+                if (blocks.length === 0) {
+                    console.warn('⚠ No blocks parsed from HTML');
+                    return false;
+                }
 
                 this.data = blocks;
                 this.renderCanvas();
                 this.updateHiddenInput();
                 if (this.options.onChange) this.options.onChange(this.data);
+
+                console.log(`✓ Import successful: ${blocks.length} blocks loaded`);
                 return true;
             } catch (error) {
                 console.error('EfArticleBuilder: HTML import failed', error);
@@ -3157,6 +3593,21 @@
                     tag: 'div',
                     type: 'embed',
                     text: `${embedType}|${src}|${caption?.textContent.trim() || ''}`,
+                    class: '',
+                    layout: 'column'
+                };
+            }
+
+            if (tagName === 'div' && element.classList.contains('ef-link-card')) {
+                const link = element.querySelector('a.ef-link-card-inner');
+                const iconEl = element.querySelector('.ef-link-icon i');
+                const textEl = element.querySelector('.ef-link-text');
+                const urlEl = element.querySelector('.ef-link-url');
+
+                return {
+                    tag: 'a',
+                    type: 'link',
+                    text: `${textEl?.textContent || ''}|${link?.href || '#'}|${link?.target || '_self'}|${iconEl?.className || ''}`,
                     class: '',
                     layout: 'column'
                 };
@@ -3634,6 +4085,51 @@
                 if (caption) {
                     html += `    <div class="ef-embed-caption">${this.escapeHtml(caption)}</div>\n`;
                 }
+                html += `  </div>\n`;
+                return html;
+            }
+
+            // Table basic
+            if (block.type === 'table-basic') {
+                const rows = block.text.split('\n').filter(r => r.trim());
+                if (rows.length > 0) {
+                    let html = `  <table class="ef-table ef-table-basic">\n`;
+                    rows.forEach((row, idx) => {
+                        const cells = row.split('|').map(c => c.trim());
+                        if (idx === 0) {
+                            html += `    <thead>\n      <tr>\n`;
+                            cells.forEach(cell => html += `        <th>${this.escapeHtml(cell)}</th>\n`);
+                            html += `      </tr>\n    </thead>\n    <tbody>\n`;
+                        } else {
+                            html += `      <tr>\n`;
+                            cells.forEach(cell => html += `        <td>${this.escapeHtml(cell)}</td>\n`);
+                            html += `      </tr>\n`;
+                        }
+                    });
+                    html += `    </tbody>\n  </table>\n`;
+                    return html;
+                }
+            }
+
+            // Link card
+            if (block.type === 'link') {
+                const parts = block.text.split('|');
+                const text = parts[0] || 'Link';
+                const url = parts[1] || '#';
+                const target = parts[2] || '_self';
+                const icon = parts[3] || '';
+
+                let html = `  <div class="ef-link-card">\n`;
+                html += `    <a href="${this.escapeHtml(url)}" target="${this.escapeHtml(target)}" class="ef-link-card-inner">\n`;
+                if (icon) {
+                    html += `      <div class="ef-link-icon"><i class="${this.escapeHtml(icon)}"></i></div>\n`;
+                }
+                html += `      <div class="ef-link-content">\n`;
+                html += `        <span class="ef-link-text">${this.escapeHtml(text)}</span>\n`;
+                html += `        <span class="ef-link-url">${this.escapeHtml(url)}</span>\n`;
+                html += `      </div>\n`;
+                html += `      <div class="ef-link-arrow"><i class="fas fa-arrow-right"></i></div>\n`;
+                html += `    </a>\n`;
                 html += `  </div>\n`;
                 return html;
             }

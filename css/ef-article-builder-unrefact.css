@@ -1,0 +1,4257 @@
+/**
+ * EF Article Builder - Standalone CSS
+ * Version: 1.2.0
+ */
+
+/* CSS Variables - Default Theme */
+:root {
+    --ef-bg: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    --ef-card-bg: rgba(255, 255, 255, 0.1);
+    --ef-card-border: rgba(255, 255, 255, 0.2);
+    --ef-text-primary: #f8fafc;
+    --ef-text-secondary: rgba(248, 250, 252, 0.8);
+    --ef-code-bg: rgba(0, 0, 0, 0.3);
+    --ef-code-text: #4ade80;
+    --ef-tip-bg: rgba(255, 255, 255, 0.1);
+    --ef-tip-border: #6366f1;
+    --ef-cta-bg: rgba(255, 255, 255, 0.1);
+    --ef-cta-text: #f8fafc;
+    --ef-cta-btn-primary: linear-gradient(135deg, #6366f1, #8b5cf6);
+    --ef-cta-btn-secondary: rgba(255, 255, 255, 0.1);
+    --ef-table-header-bg: rgba(255, 255, 255, 0.1);
+}
+
+/* Container */
+.ef-article-builder {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    background: var(--ef-bg);
+    border-radius: 12px;
+    padding: 1.5rem;
+    min-height: 600px;
+}
+
+/* Header */
+.ef-editor-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.ef-editor-title {
+    color: var(--ef-text-primary);
+    font-size: 1.75rem;
+    font-weight: bold;
+    margin: 0;
+}
+
+.ef-editor-actions {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+/* Buttons */
+.ef-btn {
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.ef-btn-primary {
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    color: white;
+}
+
+.ef-btn-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(99, 102, 241, 0.3);
+}
+
+.ef-btn-secondary {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--ef-text-primary);
+    backdrop-filter: blur(12px);
+}
+
+.ef-btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.ef-btn-danger {
+    background: rgba(239, 68, 68, 0.8);
+    color: white;
+}
+
+.ef-btn-danger:hover {
+    background: rgba(220, 38, 38, 0.9);
+}
+
+.ef-btn-theme {
+    background: rgba(236, 72, 153, 0.8);
+    color: white;
+}
+
+.ef-btn-import {
+    background: rgba(168, 85, 247, 0.8);
+    color: white;
+}
+
+.ef-btn-json {
+    background: rgba(59, 130, 246, 0.8);
+    color: white;
+}
+
+.ef-btn-html {
+    background: rgba(34, 197, 94, 0.8);
+    color: white;
+}
+
+.ef-btn-clear {
+    background: rgba(239, 68, 68, 0.8);
+    color: white;
+}
+
+.ef-btn-preview {
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    color: white;
+}
+
+.ef-btn-sm {
+    padding: 0.375rem 0.75rem;
+    font-size: 0.8125rem;
+}
+
+/* Body */
+.ef-editor-body {
+    display: grid;
+    grid-template-columns: 1fr 300px;
+    gap: 1.5rem;
+}
+
+/* Canvas */
+.ef-canvas {
+    background: rgba(255, 255, 255, 0.05);
+    border: 2px dashed var(--ef-text-primary);
+    border-radius: 12px;
+    padding: 1.5rem;
+    min-height: 400px;
+}
+
+.ef-canvas-placeholder {
+    color: var(--ef-text-primary);
+    text-align: center;
+    padding: 4rem 1rem;
+    font-size: 1.125rem;
+}
+
+/* Components Sidebar */
+.ef-components {
+    background: var(--ef-card-bg);
+    backdrop-filter: blur(12px);
+    border: 1px solid var(--ef-card-border);
+    border-radius: 12px;
+    padding: 1.5rem;
+    max-height: 80vh;
+    overflow-y: auto;
+    /* Sticky positioning */
+    position: sticky;
+    top: 1.5rem;
+    /* Jarak dari top saat sticky */
+    align-self: flex-start;
+    /* Penting untuk sticky bekerja di grid */
+}
+
+/* Animasi smooth saat jadi sticky */
+.ef-components {
+    transition: box-shadow 0.3s ease;
+}
+
+/* Optional: tambahkan shadow saat sticky untuk visual feedback */
+@supports (position: sticky) {
+    .ef-components {
+        will-change: transform;
+    }
+}
+
+
+/* ========== RESPONSIVE STICKY ========== */
+
+/* Desktop & Tablet Landscape: sticky aktif */
+@media (min-width: 1024px) {
+    .ef-components {
+        position: sticky;
+        top: 1.5rem;
+        max-height: calc(100vh - 3rem);
+        /* Full height minus top gap */
+    }
+}
+
+/* Tablet Portrait: sticky dengan height lebih pendek */
+@media (max-width: 1023px) and (min-width: 768px) {
+    .ef-components {
+        position: sticky;
+        top: 1rem;
+        max-height: 60vh;
+    }
+}
+
+/* Mobile: non-sticky, sidebar berpindah ke bawah canvas */
+@media (max-width: 767px) {
+    .ef-components {
+        position: relative;
+        /* Tidak sticky di mobile */
+        top: auto;
+        max-height: 50vh;
+    }
+}
+
+/* ============================================
+   COMPONENT SUBMENU / ACCORDION (PREMIUM)
+   ============================================ */
+
+.ef-component-submenu {
+    margin-bottom: 0.5rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.ef-component-submenu-header {
+    display: flex;
+    align-items: center;
+    padding: 0.875rem 1rem;
+    background: rgba(255, 255, 255, 0.05);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.ef-component-submenu-header:hover {
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.ef-component-submenu-header span {
+    flex: 1;
+    font-weight: 600;
+    font-size: 0.875rem;
+    color: var(--ef-text-primary, #f8fafc);
+    position: relative;
+    z-index: 1;
+}
+
+.ef-submenu-icon {
+    margin-right: 0.75rem;
+    font-size: 0.75rem;
+    transition: transform 0.3s ease;
+    color: var(--ef-text-secondary, rgba(248, 250, 252, 0.6));
+    will-change: transform;
+    position: relative;
+    z-index: 1;
+}
+
+/* PRO Badge untuk Header Submenu */
+.ef-component-submenu-header::after {
+    content: 'PRO';
+    position: absolute;
+    top: 50%;
+    right: 1rem;
+    transform: translateY(-50%);
+    background: linear-gradient(135deg, #f59e0b, #f97316);
+    color: white;
+    padding: 0.25rem 0.625rem;
+    border-radius: 0.75rem;
+    font-size: 0.625rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    box-shadow: 0 2px 4px rgba(245, 158, 11, 0.3);
+    z-index: 2;
+}
+
+/* Badge pulse animation when hovering accordion */
+.ef-component-submenu-header:hover::after {
+    animation: badge-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes badge-pulse {
+
+    0%,
+    100% {
+        box-shadow: 0 2px 4px rgba(245, 158, 11, 0.3);
+    }
+
+    50% {
+        box-shadow: 0 4px 8px rgba(245, 158, 11, 0.5);
+        transform: translateY(-50%) scale(1.05);
+    }
+}
+
+/* Ripple effect saat click */
+.ef-component-submenu-header::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    transform: translate(-50%, -50%);
+    transition: width 0.6s, height 0.6s;
+    z-index: 0;
+}
+
+.ef-component-submenu-header:active::before {
+    width: 200px;
+    height: 200px;
+}
+
+/* ===== PENTING: Accordion Open State ===== */
+.ef-component-submenu.ef-submenu-open .ef-submenu-icon {
+    transform: rotate(90deg);
+}
+
+.ef-component-submenu.ef-submenu-open .ef-component-submenu-header {
+    background: rgba(245, 158, 11, 0.1);
+    border-bottom: 1px solid rgba(245, 158, 11, 0.2);
+}
+
+/* Accordion Content */
+.ef-component-submenu-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s ease, padding 0.4s ease;
+    padding: 0 0.5rem;
+    background: rgba(0, 0, 0, 0.2);
+}
+
+.ef-component-submenu.ef-submenu-open .ef-component-submenu-content {
+    max-height: 1000px;
+    padding: 0.75rem 0.5rem;
+}
+
+/* Component Items dalam Submenu */
+.ef-component-submenu-content .ef-component-item {
+    margin-bottom: 0.5rem;
+    padding: 0.75rem 1rem;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    position: relative;
+}
+
+.ef-component-submenu-content .ef-component-item:last-child {
+    margin-bottom: 0;
+}
+
+.ef-component-submenu-content .ef-component-item:hover {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Override locked item styles untuk submenu */
+.ef-component-submenu-content .ef-component-item.ef-premium-locked {
+    opacity: 0.7;
+    cursor: not-allowed !important;
+    background: rgba(255, 193, 7, 0.03);
+    border-color: rgba(245, 158, 11, 0.1);
+}
+
+.ef-component-submenu-content .ef-component-item.ef-premium-locked::after {
+    content: '🔒';
+    position: absolute;
+    top: 50%;
+    right: 1rem;
+    transform: translateY(-50%);
+    font-size: 0.875rem;
+    opacity: 0.6;
+}
+
+.ef-component-submenu-content .ef-component-item.ef-premium-locked:hover {
+    background: rgba(255, 193, 7, 0.06);
+    transform: none;
+}
+
+/* Icon di Component Item */
+.ef-component-submenu-content .ef-component-item i {
+    margin-right: 0.75rem;
+    font-size: 1rem;
+    opacity: 0.7;
+}
+
+.ef-component-submenu-content .ef-component-item.ef-premium-locked i {
+    opacity: 0.4;
+}
+
+/* Animation untuk Accordion expand */
+@keyframes accordion-expand {
+    from {
+        max-height: 0;
+        opacity: 0;
+    }
+
+    to {
+        max-height: 1000px;
+        opacity: 1;
+    }
+}
+
+.ef-component-submenu.ef-submenu-open .ef-component-submenu-content {
+    animation: accordion-expand 0.4s ease-out;
+}
+
+/* Highlight saat hover accordion header */
+.ef-component-submenu-header:active {
+    background: rgba(255, 255, 255, 0.12);
+    transform: scale(0.98);
+}
+
+.ef-components-title {
+    color: var(--ef-text-primary);
+    font-size: 1.25rem;
+    font-weight: bold;
+    margin: 0 0 1rem 0 !important;
+}
+
+.ef-component-group {
+    margin-bottom: 1.5rem;
+}
+
+.ef-component-group-title {
+    color: var(--ef-text-primary, #f8fafc);
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin: 0 0 0.5rem 0;
+}
+
+
+.ef-component-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.ef-component-item {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid var(--ef-card-border);
+    border-radius: 8px;
+    padding: 0.75rem;
+    cursor: grab;
+    transition: all 0.15s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: var(--ef-text-primary);
+    font-size: 0.875rem;
+}
+
+.ef-component-item:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateY(-1px);
+}
+
+.ef-component-item:active {
+    cursor: grabbing;
+}
+
+.ef-component-item i {
+    color: #a78bfa;
+}
+
+/* modal */
+/* ========== MODAL IMPROVEMENTS - FULL SCREEN FIXED ========== */
+/* REPLACE seluruh section modal dengan ini */
+
+/* Modal Overlay - Full Screen Fixed */
+.ef-modal {
+    display: none;
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    margin: 0 !important;
+    padding: 1rem !important;
+    background: rgba(0, 0, 0, 0);
+    backdrop-filter: blur(0px);
+    z-index: 999999 !important;
+    /* Sangat tinggi untuk memastikan di atas semua */
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    -webkit-overflow-scrolling: touch;
+    transition: background 0.3s ease, backdrop-filter 0.3s ease;
+}
+
+/* Premium Required Modal */
+.ef-modal-premium-required .ef-modal-content {
+    max-width: 500px;
+}
+
+.ef-modal-premium-required .ef-modal-header h3 {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.ef-modal-premium-required .ef-modal-header i.fa-lock {
+    color: #f59e0b;
+}
+
+.ef-modal-premium-required .ef-btn-primary {
+    background: linear-gradient(135deg, #f59e0b, #f97316);
+}
+
+.ef-modal-premium-required .ef-btn-primary:hover {
+    background: linear-gradient(135deg, #d97706, #ea580c);
+}
+
+/* Modal Active State dengan Animasi */
+.ef-modal-active {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    background: rgba(0, 0, 0, 0.7) !important;
+    backdrop-filter: blur(8px) !important;
+    animation: modalFadeIn 0.3s ease;
+}
+
+@keyframes modalFadeIn {
+    from {
+        background: rgba(0, 0, 0, 0);
+        backdrop-filter: blur(0px);
+    }
+
+    to {
+        background: rgba(0, 0, 0, 0.7);
+        backdrop-filter: blur(8px);
+    }
+}
+
+/* Modal Content Container */
+.ef-modal-content {
+    background: rgba(255, 255, 255, 0.1) !important;
+    backdrop-filter: blur(16px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    border-radius: 16px !important;
+    max-width: 600px !important;
+    width: 90% !important;
+    max-height: 85vh !important;
+    margin: auto !important;
+    display: flex !important;
+    flex-direction: column !important;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5) !important;
+    position: relative !important;
+    /* Animasi slide + scale */
+    animation: modalSlideIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    transform-origin: center center;
+}
+
+@keyframes modalSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-30px) scale(0.95);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* Modal closing animation */
+.ef-modal.ef-modal-closing .ef-modal-content {
+    animation: modalSlideOut 0.3s cubic-bezier(0.32, 0, 0.67, 0) forwards !important;
+}
+
+@keyframes modalSlideOut {
+    from {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+
+    to {
+        opacity: 0;
+        transform: translateY(-20px) scale(0.95);
+    }
+}
+
+.ef-modal.ef-modal-closing {
+    animation: modalFadeOut 0.3s ease forwards !important;
+}
+
+@keyframes modalFadeOut {
+    from {
+        background: rgba(0, 0, 0, 0.7);
+        backdrop-filter: blur(8px);
+    }
+
+    to {
+        background: rgba(0, 0, 0, 0);
+        backdrop-filter: blur(0px);
+    }
+}
+
+/* Modal Large */
+.ef-modal-content.ef-modal-large {
+    max-width: 1200px !important;
+    width: 95% !important;
+}
+
+.ef-modal-content.ef-modal-md {
+    max-width: 900px !important;
+    width: 100% !important;
+}
+
+/* Modal Header - Fixed */
+.ef-modal-header {
+    padding: 1.5rem !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 1rem !important;
+    flex-shrink: 0 !important;
+    background: rgba(255, 255, 255, 0.05) !important;
+    border-radius: 16px 16px 0 0 !important;
+}
+
+.ef-modal-header h3 {
+    color: var(--ef-text-primary) !important;
+    margin: 0 !important;
+    font-size: 1.5rem !important;
+    font-weight: 700 !important;
+}
+
+/* Close Button dengan Hover Effect */
+.ef-modal-close {
+    background: rgba(255, 255, 255, 0.1) !important;
+    border: none !important;
+    color: rgba(255, 255, 255, 0.7) !important;
+    font-size: 1.5rem !important;
+    cursor: pointer !important;
+    padding: 0 !important;
+    width: 36px !important;
+    height: 36px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border-radius: 8px !important;
+    transition: all 0.2s ease !important;
+    flex-shrink: 0 !important;
+}
+
+.ef-modal-close:hover {
+    background: rgba(239, 68, 68, 0.8) !important;
+    color: white !important;
+    transform: rotate(90deg) !important;
+}
+
+/* Modal Body - Scrollable */
+.ef-modal-body {
+    padding: 1.5rem !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    flex: 1 !important;
+    -webkit-overflow-scrolling: touch !important;
+}
+
+/* Custom Scrollbar untuk Modal Body */
+.ef-modal-body::-webkit-scrollbar {
+    width: 8px;
+}
+
+.ef-modal-body::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 4px;
+    margin: 4px;
+}
+
+.ef-modal-body::-webkit-scrollbar-thumb {
+    background: rgba(99, 102, 241, 0.5);
+    border-radius: 4px;
+}
+
+.ef-modal-body::-webkit-scrollbar-thumb:hover {
+    background: rgba(99, 102, 241, 0.7);
+}
+
+/* Modal Footer - Fixed */
+.ef-modal-footer {
+    padding: 1.5rem !important;
+    border-top: 1px solid rgba(255, 255, 255, 0.2) !important;
+    display: flex !important;
+    justify-content: flex-end !important;
+    gap: 0.75rem !important;
+    flex-shrink: 0 !important;
+    background: rgba(255, 255, 255, 0.05) !important;
+    border-radius: 0 0 16px 16px !important;
+}
+
+/* Prevent body scroll when modal is open */
+body.ef-modal-open {
+    overflow: hidden !important;
+}
+
+/* Modal Container di body level */
+#ef-modals-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 0;
+    height: 0;
+    z-index: 999999;
+    pointer-events: none;
+}
+
+#ef-modals-container .ef-modal {
+    pointer-events: auto;
+}
+
+/* Copy Button States */
+.ef-modal-header .ef-btn-sm[data-action="copy-code"] {
+    transition: all 0.3s ease;
+}
+
+.ef-modal-header .ef-btn-sm[data-action="copy-code"]:disabled {
+    cursor: not-allowed;
+    opacity: 0.9;
+}
+
+.ef-modal-header .ef-btn-sm[data-action="copy-code"]:not(:disabled):hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(99, 102, 241, 0.3);
+}
+
+/* Canvas Block dengan Delete Button */
+.ef-canvas-block {
+    background: var(--ef-card-bg);
+    backdrop-filter: blur(12px);
+    border: 1px solid var(--ef-card-border);
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 0.75rem;
+    cursor: grab;
+    transition: all 0.15s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: var(--ef-text-primary);
+    position: relative;
+}
+
+.ef-canvas-block:hover {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: #6366f1;
+}
+
+.ef-canvas-block:active {
+    cursor: grabbing;
+}
+
+.ef-canvas-block i {
+    color: #a78bfa;
+    font-size: 1.125rem;
+}
+
+.ef-canvas-block span {
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 60rem;
+}
+
+/* Delete Button di Canvas Block */
+.ef-canvas-block-delete {
+    background: rgba(239, 68, 68, 0.2);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    color: #ef4444;
+    padding: 0.5rem;
+    border-radius: 6px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    flex-shrink: 0;
+    transition: all 0.2s ease;
+    opacity: 0;
+}
+
+.ef-canvas-block:hover .ef-canvas-block-delete {
+    opacity: 1;
+}
+
+.ef-canvas-block-delete:hover {
+    background: rgba(239, 68, 68, 0.8);
+    color: white;
+    border-color: #ef4444;
+    transform: scale(1.1);
+}
+
+.ef-canvas-block-delete:active {
+    transform: scale(0.95);
+}
+
+.ef-canvas-block-delete i {
+    font-size: 0.875rem;
+    color: currentColor;
+}
+
+/* Responsive Delete Button */
+@media (max-width: 767px) {
+    .ef-canvas-block-delete {
+        opacity: 1;
+        /* Always visible on mobile */
+        width: 32px;
+        height: 32px;
+    }
+}
+
+/* ========== RESPONSIVE MODAL ========== */
+
+/* Tablet */
+@media (max-width: 1023px) {
+    .ef-modal-content {
+        width: 92% !important;
+        max-height: 90vh !important;
+    }
+
+    .ef-modal-content.ef-modal-large {
+        width: 95% !important;
+    }
+}
+
+/* Mobile */
+@media (max-width: 767px) {
+    .ef-modal {
+        padding: 0 !important;
+        align-items: flex-end !important;
+        /* Modal muncul dari bawah di mobile */
+    }
+
+    .ef-modal-content {
+        max-width: 100% !important;
+        width: 100% !important;
+        max-height: 95vh !important;
+        margin: 0 !important;
+        border-radius: 16px 16px 0 0 !important;
+        animation: modalSlideInMobile 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+    }
+
+    @keyframes modalSlideInMobile {
+        from {
+            opacity: 0;
+            transform: translateY(100%);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .ef-modal.ef-modal-closing .ef-modal-content {
+        animation: modalSlideOutMobile 0.3s cubic-bezier(0.32, 0, 0.67, 0) forwards !important;
+    }
+
+    @keyframes modalSlideOutMobile {
+        from {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        to {
+            opacity: 0;
+            transform: translateY(100%);
+        }
+    }
+
+    .ef-modal-header {
+        padding: 1rem !important;
+    }
+
+    .ef-modal-header h3 {
+        font-size: 1.25rem !important;
+    }
+
+    .ef-modal-body {
+        padding: 1rem !important;
+    }
+
+    .ef-modal-footer {
+        padding: 1rem !important;
+        flex-direction: column !important;
+    }
+
+    .ef-modal-footer .ef-btn {
+        width: 100% !important;
+        justify-content: center !important;
+    }
+}
+
+/* Small Mobile */
+@media (max-width: 480px) {
+    .ef-modal-header h3 {
+        font-size: 1.125rem !important;
+    }
+
+    .ef-modal-close {
+        width: 32px !important;
+        height: 32px !important;
+        font-size: 1.25rem !important;
+    }
+}
+
+/* ========== LIVE PREVIEW - PROFESSIONAL LAYOUT ========== */
+
+/* Live Preview Button Active State */
+.ef-btn-active {
+    background: linear-gradient(135deg, #10b981, #059669) !important;
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.3) !important;
+}
+
+/* Editor Body dengan Live Preview */
+.ef-editor-body.ef-with-live-preview {
+    display: grid !important;
+    grid-template-columns: minmax(300px, 380px) 1fr minmax(280px, 320px) !important;
+    gap: 1.5rem !important;
+}
+
+/* Live Preview Container */
+.ef-live-preview {
+    background: rgba(0, 0, 0, 0.30);
+    backdrop-filter: blur(12px);
+    border: 1px solid var(--ef-card-border);
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    max-height: calc(100vh - 200px);
+    position: sticky;
+    top: 1.5rem;
+    overflow: hidden;
+    padding: 1rem;
+}
+
+.ef-live-preview-header {
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid var(--ef-card-border);
+    border-radius: 12px 12px 0 0;
+    flex-shrink: 0;
+    margin-bottom: 1rem;
+}
+
+.ef-live-preview-header h3 {
+    color: var(--ef-text-primary);
+    font-size: 1rem;
+    font-weight: 600;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.ef-live-preview-header i {
+    color: #10b981;
+}
+
+.ef-live-preview-content {
+    padding: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    flex: 1;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* Inner preview container sudah punya padding dari generateHTML */
+/* .ef-live-preview-content .ef-preview-container {
+    border: none !important;
+    border-radius: 0 !important;
+    margin: 0 !important;
+} */
+
+/* Scrollbar untuk live preview */
+.ef-live-preview-content::-webkit-scrollbar {
+    width: 6px;
+}
+
+.ef-live-preview-content::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 3px;
+}
+
+.ef-live-preview-content::-webkit-scrollbar-thumb {
+    background: rgba(16, 185, 129, 0.5);
+    border-radius: 3px;
+}
+
+.ef-live-preview-content::-webkit-scrollbar-thumb:hover {
+    background: rgba(16, 185, 129, 0.7);
+}
+
+/* Edit Mode Styles */
+.ef-live-preview-content.ef-edit-mode-active {
+    cursor: default;
+}
+
+.ef-live-preview-editable {
+    position: relative;
+    cursor: pointer !important;
+    transition: all 0.2s ease;
+}
+
+.ef-live-preview-editable::before {
+    content: '✏️';
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: rgba(99, 102, 241, 0.9);
+    color: white;
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.875rem;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    pointer-events: none;
+    z-index: 10;
+}
+
+.ef-live-preview-editable:hover {
+    outline: 2px solid #6366f1;
+    outline-offset: 2px;
+    background: rgba(99, 102, 241, 0.05) !important;
+}
+
+.ef-live-preview-editable:hover::before {
+    opacity: 1;
+}
+
+.ef-btn-edit-mode {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--ef-text-primary);
+}
+
+.ef-btn-edit-mode.ef-btn-active {
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    color: white;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.3);
+}
+
+/* Disable interactions in edit mode */
+.ef-edit-mode-active .ef-accordion-header,
+.ef-edit-mode-active .ef-poll-option,
+.ef-edit-mode-active .ef-cta-btn,
+.ef-edit-mode-active .ef-link-card-inner {
+    pointer-events: none !important;
+}
+
+/* But allow edit clicks */
+.ef-edit-mode-active .ef-live-preview-editable {
+    pointer-events: auto !important;
+}
+
+/* ========== RESPONSIVE BREAKPOINTS ========== */
+
+/* Large Desktop (1600px+) */
+@media (min-width: 1600px) {
+    .ef-editor-body.ef-with-live-preview {
+        grid-template-columns: 45% 30% 20% !important;
+    }
+}
+
+/* Desktop (1200px - 1599px) */
+@media (max-width: 1599px) and (min-width: 1200px) {
+    .ef-editor-body.ef-with-live-preview {
+        grid-template-columns: 45% 30% 20% !important;
+    }
+}
+
+/* Small Desktop (1024px - 1199px) */
+@media (max-width: 1199px) and (min-width: 1024px) {
+    .ef-editor-body.ef-with-live-preview {
+        grid-template-columns: 320px 1fr 280px !important;
+    }
+
+    .ef-btn-live-preview {
+        display: none;
+    }
+}
+
+/* Tablet (768px - 1023px) - Stack Vertical */
+@media (max-width: 1023px) {
+    .ef-editor-body.ef-with-live-preview {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 1.5rem !important;
+    }
+
+    .ef-live-preview {
+        order: -1;
+        max-height: 50vh !important;
+        position: relative !important;
+        top: 0 !important;
+    }
+
+    .ef-canvas {
+        order: 1;
+    }
+
+    .ef-components {
+        order: 2;
+        max-height: 60vh !important;
+    }
+}
+
+/* Mobile (max 767px) */
+@media (max-width: 767px) {
+    .ef-live-preview {
+        max-height: 45vh !important;
+    }
+
+    .ef-live-preview-header {
+        padding: 0.75rem 1rem !important;
+    }
+
+    .ef-live-preview-header h3 {
+        font-size: 0.875rem !important;
+    }
+
+    .ef-components {
+        max-height: 50vh !important;
+    }
+}
+
+/* ============================================
+   COMPONENT PREVIEW TOOLTIP - AUTO WIDTH
+   ============================================ */
+
+.ef-component-preview-tooltip {
+    position: fixed;
+    background: var(--ef-card-bg, rgba(255, 255, 255, 0.1));
+    backdrop-filter: blur(20px);
+    border: 1px solid var(--ef-card-border, rgba(255, 255, 255, 0.2));
+    border-radius: 12px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+    z-index: 999999;
+
+    /* 🔥 AUTO WIDTH DENGAN CONSTRAINTS */
+    min-width: 400px;
+    max-width: 40vw;
+    /* 90% viewport width - tidak akan keluar layar */
+    width: auto;
+    /* Auto adjust to content */
+    max-height: 80vh;
+    overflow-y: auto;
+
+    animation: ef-tooltip-fadein 0.2s ease-out;
+}
+
+/* Responsive breakpoints */
+@media (max-width: 1200px) {
+    .ef-component-preview-tooltip {
+        min-width: 350px;
+        max-width: 50vw;
+    }
+}
+
+@media (max-width: 768px) {
+    .ef-component-preview-tooltip {
+        min-width: 300px;
+        max-width: 95vw;
+        max-height: 70vh;
+    }
+}
+
+/* Scrollbar styling */
+.ef-component-preview-tooltip::-webkit-scrollbar {
+    width: 6px;
+}
+
+.ef-component-preview-tooltip::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 3px;
+}
+
+.ef-component-preview-tooltip::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 3px;
+}
+
+.ef-component-preview-tooltip::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.5);
+}
+
+/* Header - fixed width untuk consistency */
+.ef-component-preview-header {
+    padding: 0.875rem 1.25rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    font-weight: 600;
+    font-size: 0.875rem;
+    color: var(--ef-text-primary, #f8fafc);
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px 12px 0 0;
+    white-space: nowrap;
+    /* Prevent header text wrap */
+}
+
+/* Body - let content dictate width */
+.ef-component-preview-body {
+    padding: 0;
+    max-height: calc(80vh - 60px);
+    overflow-y: auto;
+    overflow-x: hidden;
+    /* Prevent horizontal scroll */
+}
+
+.ef-component-preview-body .ef-preview-container {
+    padding: 1.25rem !important;
+    min-height: 100px;
+    box-sizing: border-box;
+}
+
+/* 🔥 SPECIAL HANDLING FOR IMAGES */
+.ef-component-preview-body .ef-image-block {
+    width: 100%;
+    max-width: none;
+    /* Allow full width */
+}
+
+.ef-component-preview-body .ef-image-block img {
+    width: 100%;
+    height: auto;
+    max-width: 100%;
+    display: block;
+    border-radius: 8px;
+}
+
+.ef-component-preview-body .ef-image-caption {
+    margin-top: 0.75rem;
+    font-size: 0.875rem;
+    color: var(--ef-text-secondary, rgba(248, 250, 252, 0.8));
+    text-align: center;
+}
+
+/* 🔥 SPECIAL HANDLING FOR EMBEDS */
+.ef-component-preview-body .ef-embed-block {
+    width: 100%;
+}
+
+.ef-component-preview-body .ef-embed-container {
+    position: relative;
+    padding-bottom: 56.25%;
+    /* 16:9 aspect ratio */
+    height: 0;
+    overflow: hidden;
+}
+
+.ef-component-preview-body .ef-embed-container iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 8px;
+}
+
+/* 🔥 SPECIAL HANDLING FOR GRIDS */
+.ef-component-preview-body .ef-card-grid {
+    width: 100%;
+}
+
+/* 🔥 SPECIAL HANDLING FOR TABLES */
+.ef-component-preview-body .ef-table {
+    width: 100%;
+    min-width: 500px;
+}
+
+/* Animation */
+@keyframes ef-tooltip-fadein {
+    from {
+        opacity: 0;
+        transform: translateY(-10px) scale(0.95);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.ef-tooltip-closing {
+    animation: ef-tooltip-fadeout 0.15s ease-in forwards;
+}
+
+@keyframes ef-tooltip-fadeout {
+    from {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    to {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+}
+
+@media (max-width: 767px) {
+    .ef-component-preview-tooltip {
+        display: none !important;
+        /* Hide on mobile - hover not practical */
+    }
+}
+
+/* ========== DISPLAY MODES ========== */
+
+/* Compact Mode */
+.ef-compact-toggle {
+    margin-bottom: 1rem;
+}
+
+.ef-btn-open-editor {
+    padding: 0.875rem 1.5rem !important;
+    font-size: 1rem !important;
+}
+
+/* Inline Limited Mode */
+.ef-mode-inline-limited {
+    position: relative;
+}
+
+.ef-mode-inline-limited .ef-editor-body {
+    max-height: inherit;
+    overflow-y: auto;
+}
+
+.ef-mode-inline-limited::-webkit-scrollbar {
+    width: 10px;
+}
+
+.ef-mode-inline-limited::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 5px;
+}
+
+.ef-mode-inline-limited::-webkit-scrollbar-thumb {
+    background: rgba(99, 102, 241, 0.5);
+    border-radius: 5px;
+}
+
+/* Responsive Compact Mode */
+@media (max-width: 767px) {
+    .ef-btn-open-editor {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+/* Form */
+.ef-form-group {
+    margin-bottom: 1.5rem;
+}
+
+.ef-form-group label {
+    display: block;
+    color: var(--ef-text-primary);
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    font-size: 0.875rem;
+}
+
+.ef-form-control {
+    width: 100%;
+    padding: 0.75rem;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(12px);
+    border: 1px solid var(--ef-card-border);
+    border-radius: 8px;
+    color: var(--ef-text-primary);
+    font-size: 0.9375rem;
+    font-family: inherit;
+    transition: all 0.2s ease;
+}
+
+.ef-form-control:focus {
+    outline: none;
+    border-color: #6366f1;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+}
+
+.ef-form-control::placeholder {
+    color: rgba(255, 255, 255, 0.4);
+}
+
+.ef-code-input {
+    font-family: 'Courier New', monospace;
+    font-size: 0.875rem;
+}
+
+/* List Item Form */
+.ef-list-item {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.ef-list-item .ef-form-control {
+    flex: 1;
+}
+
+/* Code Block Display */
+.ef-code-block {
+    background: var(--ef-code-bg);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    padding: 1rem;
+    overflow-x: auto;
+    margin: 0;
+}
+
+.ef-code-block code {
+    color: var(--ef-code-text);
+    font-family: 'Courier New', monospace;
+    font-size: 0.875rem;
+    white-space: pre;
+}
+
+/* Preview Container - dengan spesifisitas lebih tinggi */
+.ef-preview-container,
+.ef-modal-body .ef-preview-container {
+    background: var(--ef-card-bg) !important;
+    backdrop-filter: blur(12px);
+    border: 1px solid var(--ef-card-border);
+    border-radius: 12px;
+    padding: 2rem;
+}
+
+.ef-preview-container h2,
+.ef-modal-body .ef-preview-container h2 {
+    font-size: 1.875rem !important;
+    font-weight: 700 !important;
+    margin: 1rem 0 1rem 0 !important;
+    color: var(--ef-text-primary) !important;
+}
+
+.ef-preview-container h3,
+.ef-modal-body .ef-preview-container h3 {
+    font-size: 1.5rem !important;
+    font-weight: 600 !important;
+    padding: 1.5rem 0 0.75rem 0 !important;
+    color: var(--ef-text-primary) !important;
+}
+
+.ef-preview-container h4,
+.ef-modal-body .ef-preview-container h4 {
+    font-size: 1.25rem !important;
+    font-weight: 600 !important;
+    color: var(--ef-text-primary) !important;
+}
+
+.ef-preview-container p,
+.ef-modal-body .ef-preview-container p {
+    padding-bottom: 1.5rem !important;
+    color: var(--ef-text-secondary) !important;
+    line-height: 1.8 !important;
+}
+
+.ef-preview-container p.text-xl,
+.ef-modal-body .ef-preview-container p.text-xl {
+    font-size: 1.25rem !important;
+    font-weight: 500 !important;
+}
+
+.ef-preview-container ul,
+.ef-modal-body .ef-preview-container ul {
+    padding: 1rem 0 !important;
+    padding-left: 1.5rem !important;
+    color: var(--ef-text-secondary) !important;
+    list-style: decimal;
+}
+
+.ef-preview-container ol,
+.ef-modal-body .ef-preview-container ol {
+    padding: 1rem 0 !important;
+    padding-left: 1.5rem !important;
+    color: var(--ef-text-secondary) !important;
+}
+
+.ef-preview-container li,
+.ef-modal-body .ef-preview-container li {
+    padding-bottom: 0.5rem !important;
+    color: var(--ef-text-secondary) !important;
+    list-style: disc;
+}
+
+.ef-preview-container .ef-code-block,
+.ef-modal-body .ef-preview-container .ef-code-block {
+    background: var(--ef-code-bg) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border-radius: 8px !important;
+    padding: 1rem !important;
+    overflow-x: auto !important;
+    margin: 1.5rem 0 !important;
+}
+
+.ef-preview-container .ef-code-block code,
+.ef-modal-body .ef-preview-container .ef-code-block code {
+    color: var(--ef-code-text) !important;
+    font-family: 'Courier New', monospace !important;
+    font-size: 0.875rem !important;
+    white-space: pre !important;
+}
+
+/* ========== TIP BLOCKS - 10 VARIANTS ========== */
+/* REPLACE/UPDATE bagian .ef-tip-block yang lama dengan ini semua */
+
+/* Base Tip Block Structure */
+.ef-preview-container .ef-tip-block,
+.ef-modal-body .ef-preview-container .ef-tip-block {
+    display: flex !important;
+    gap: 1rem !important;
+    padding: 1.25rem !important;
+    border-radius: 12px !important;
+    margin: 1.5rem 0 !important;
+    align-items: flex-start !important;
+}
+
+.ef-preview-container .ef-tip-icon,
+.ef-modal-body .ef-preview-container .ef-tip-icon {
+    width: 40px !important;
+    height: 40px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border-radius: 8px !important;
+    flex-shrink: 0 !important;
+}
+
+.ef-preview-container .ef-tip-icon svg,
+.ef-modal-body .ef-preview-container .ef-tip-icon svg {
+    font-size: 1.25rem !important;
+    color: var(--ef-text-primary);
+}
+
+.ef-preview-container .ef-tip-icon i,
+.ef-modal-body .ef-preview-container .ef-tip-icon i {
+    font-size: 1.25rem !important;
+    color: var(--ef-text-primary);
+}
+
+.ef-preview-container .ef-tip-content,
+.ef-modal-body .ef-preview-container .ef-tip-content {
+    flex: 1 !important;
+}
+
+.ef-preview-container .ef-tip-content strong,
+.ef-modal-body .ef-preview-container .ef-tip-content strong {
+    display: block !important;
+    margin-bottom: 0.5rem !important;
+    font-size: 1rem !important;
+    color: var(--ef-text-primary);
+}
+
+.ef-preview-container .ef-tip-content p,
+.ef-modal-body .ef-preview-container .ef-tip-content p {
+    margin-bottom: 0 !important;
+    font-size: 0.9375rem !important;
+}
+
+/* Tip Info - Blue */
+.ef-preview-container .ef-tip-info,
+.ef-modal-body .ef-preview-container .ef-tip-info {
+    background: rgba(59, 130, 246, 0.15) !important;
+    border-left: 4px solid #3b82f6 !important;
+}
+
+.ef-preview-container .ef-tip-info .ef-tip-icon,
+.ef-modal-body .ef-preview-container .ef-tip-info .ef-tip-icon {
+    background: rgba(59, 130, 246, 0.2) !important;
+}
+
+.ef-preview-container .ef-tip-info .ef-tip-icon i,
+.ef-modal-body .ef-preview-container .ef-tip-info .ef-tip-icon i {
+    color: #3b82f6 !important;
+}
+
+/* Tip Success - Green */
+.ef-preview-container .ef-tip-success,
+.ef-modal-body .ef-preview-container .ef-tip-success {
+    background: rgba(34, 197, 94, 0.15) !important;
+    border-left: 4px solid #22c55e !important;
+}
+
+.ef-preview-container .ef-tip-success .ef-tip-icon,
+.ef-modal-body .ef-preview-container .ef-tip-success .ef-tip-icon {
+    background: rgba(34, 197, 94, 0.2) !important;
+}
+
+.ef-preview-container .ef-tip-success .ef-tip-icon i,
+.ef-modal-body .ef-preview-container .ef-tip-success .ef-tip-icon i {
+    color: #22c55e !important;
+}
+
+/* Tip Warning - Yellow/Orange */
+.ef-preview-container .ef-tip-warning,
+.ef-modal-body .ef-preview-container .ef-tip-warning {
+    background: rgba(245, 158, 11, 0.15) !important;
+    border-left: 4px solid #f59e0b !important;
+}
+
+.ef-preview-container .ef-tip-warning .ef-tip-icon,
+.ef-modal-body .ef-preview-container .ef-tip-warning .ef-tip-icon {
+    background: rgba(245, 158, 11, 0.2) !important;
+}
+
+.ef-preview-container .ef-tip-warning .ef-tip-icon i,
+.ef-modal-body .ef-preview-container .ef-tip-warning .ef-tip-icon i {
+    color: #f59e0b !important;
+}
+
+/* Tip Danger - Red */
+.ef-preview-container .ef-tip-danger,
+.ef-modal-body .ef-preview-container .ef-tip-danger {
+    background: rgba(239, 68, 68, 0.15) !important;
+    border-left: 4px solid #ef4444 !important;
+}
+
+.ef-preview-container .ef-tip-danger .ef-tip-icon,
+.ef-modal-body .ef-preview-container .ef-tip-danger .ef-tip-icon {
+    background: rgba(239, 68, 68, 0.2) !important;
+}
+
+.ef-preview-container .ef-tip-danger .ef-tip-icon i,
+.ef-modal-body .ef-preview-container .ef-tip-danger .ef-tip-icon i {
+    color: #ef4444 !important;
+}
+
+/* Tip Note - Gray */
+.ef-preview-container .ef-tip-note,
+.ef-modal-body .ef-preview-container .ef-tip-note {
+    background: rgba(148, 163, 184, 0.15) !important;
+    border-left: 4px solid #94a3b8 !important;
+}
+
+.ef-preview-container .ef-tip-note .ef-tip-icon,
+.ef-modal-body .ef-preview-container .ef-tip-note .ef-tip-icon {
+    background: rgba(148, 163, 184, 0.2) !important;
+}
+
+.ef-preview-container .ef-tip-note .ef-tip-icon i,
+.ef-modal-body .ef-preview-container .ef-tip-note .ef-tip-icon i {
+    color: #94a3b8 !important;
+}
+
+/* Tip Question - Cyan */
+.ef-preview-container .ef-tip-question,
+.ef-modal-body .ef-preview-container .ef-tip-question {
+    background: rgba(6, 182, 212, 0.15) !important;
+    border-left: 4px solid #06b6d4 !important;
+}
+
+.ef-preview-container .ef-tip-question .ef-tip-icon,
+.ef-modal-body .ef-preview-container .ef-tip-question .ef-tip-icon {
+    background: rgba(6, 182, 212, 0.2) !important;
+}
+
+.ef-preview-container .ef-tip-question .ef-tip-icon i,
+.ef-modal-body .ef-preview-container .ef-tip-question .ef-tip-icon i {
+    color: #06b6d4 !important;
+}
+
+/* Tip Star (Pro Tip) - Purple */
+.ef-preview-container .ef-tip-star,
+.ef-modal-body .ef-preview-container .ef-tip-star {
+    background: rgba(168, 85, 247, 0.15) !important;
+    border-left: 4px solid #a855f7 !important;
+}
+
+.ef-preview-container .ef-tip-star .ef-tip-icon,
+.ef-modal-body .ef-preview-container .ef-tip-star .ef-tip-icon {
+    background: rgba(168, 85, 247, 0.2) !important;
+}
+
+.ef-preview-container .ef-tip-star .ef-tip-icon i,
+.ef-modal-body .ef-preview-container .ef-tip-star .ef-tip-icon i {
+    color: #a855f7 !important;
+}
+
+/* Tip Check (Best Practice) - Teal */
+.ef-preview-container .ef-tip-check,
+.ef-modal-body .ef-preview-container .ef-tip-check {
+    background: rgba(20, 184, 166, 0.15) !important;
+    border-left: 4px solid #14b8a6 !important;
+}
+
+.ef-preview-container .ef-tip-check .ef-tip-icon,
+.ef-modal-body .ef-preview-container .ef-tip-check .ef-tip-icon {
+    background: rgba(20, 184, 166, 0.2) !important;
+}
+
+.ef-preview-container .ef-tip-check .ef-tip-icon i,
+.ef-modal-body .ef-preview-container .ef-tip-check .ef-tip-icon i {
+    color: #14b8a6 !important;
+}
+
+/* Tip Quote - Special Style */
+.ef-preview-container .ef-tip-quote,
+.ef-modal-body .ef-preview-container .ef-tip-quote {
+    background: rgba(99, 102, 241, 0.1) !important;
+    border-left: 4px solid #6366f1 !important;
+}
+
+.ef-preview-container .ef-tip-quote .ef-tip-icon,
+.ef-modal-body .ef-preview-container .ef-tip-quote .ef-tip-icon {
+    background: rgba(99, 102, 241, 0.2) !important;
+}
+
+.ef-preview-container .ef-tip-quote .ef-tip-icon i,
+.ef-modal-body .ef-preview-container .ef-tip-quote .ef-tip-icon i {
+    color: #6366f1 !important;
+}
+
+.ef-preview-container .ef-tip-quote blockquote,
+.ef-modal-body .ef-preview-container .ef-tip-quote blockquote {
+    font-size: 1.125rem !important;
+    font-style: italic !important;
+    margin: 0.5rem 0 !important;
+    color: var(--ef-text-primary) !important;
+    line-height: 1.6 !important;
+}
+
+.ef-preview-container .ef-tip-quote cite,
+.ef-modal-body .ef-preview-container .ef-tip-quote cite {
+    display: block !important;
+    margin-top: 0.75rem !important;
+    font-size: 0.875rem !important;
+    font-style: normal !important;
+    color: var(--ef-text-secondary) !important;
+    font-weight: 600 !important;
+}
+
+.ef-preview-container .ef-tip-quote small,
+.ef-modal-body .ef-preview-container .ef-tip-quote small {
+    display: block !important;
+    margin-bottom: 0.5rem !important;
+    font-size: 0.75rem !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.05em !important;
+    color: #6366f1 !important;
+    font-weight: 700 !important;
+}
+
+/* Tip Steps - Special Style */
+.ef-preview-container .ef-tip-steps,
+.ef-modal-body .ef-preview-container .ef-tip-steps {
+    background: rgba(236, 72, 153, 0.15) !important;
+    border-left: 4px solid #ec4899 !important;
+}
+
+.ef-preview-container .ef-tip-steps .ef-tip-icon,
+.ef-modal-body .ef-preview-container .ef-tip-steps .ef-tip-icon {
+    background: rgba(236, 72, 153, 0.2) !important;
+}
+
+.ef-preview-container .ef-tip-steps .ef-tip-icon i,
+.ef-modal-body .ef-preview-container .ef-tip-steps .ef-tip-icon i {
+    color: #ec4899 !important;
+}
+
+.ef-preview-container .ef-steps-list,
+.ef-modal-body .ef-preview-container .ef-steps-list {
+    margin: 0.75rem 0 0 0 !important;
+    padding-left: 1.5rem !important;
+    list-style: none !important;
+    counter-reset: step-counter !important;
+}
+
+.ef-preview-container .ef-steps-list li,
+.ef-modal-body .ef-preview-container .ef-steps-list li {
+    counter-increment: step-counter !important;
+    margin-bottom: 0.75rem !important;
+    padding-left: 2rem !important;
+    position: relative !important;
+}
+
+.ef-preview-container .ef-steps-list li:before,
+.ef-modal-body .ef-preview-container .ef-steps-list li:before {
+    content: counter(step-counter) !important;
+    position: absolute !important;
+    left: 0 !important;
+    top: 0 !important;
+    width: 24px !important;
+    height: 24px !important;
+    background: #ec4899 !important;
+    color: white !important;
+    border-radius: 50% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: 0.75rem !important;
+    font-weight: 700 !important;
+}
+
+/* Card Basic */
+.ef-preview-container .ef-card-basic,
+.ef-modal-body .ef-preview-container .ef-card-basic {
+    background: var(--ef-card-bg) !important;
+    border: 1px solid var(--ef-card-border) !important;
+    padding: 1.5rem !important;
+    border-radius: 8px !important;
+    margin: 1.5rem 0 !important;
+}
+
+/* Card Image */
+.ef-preview-container .ef-card-image,
+.ef-modal-body .ef-preview-container .ef-card-image {
+    background: var(--ef-card-bg) !important;
+    border: 1px solid var(--ef-card-border) !important;
+    border-radius: 8px !important;
+    margin: 1.5rem 0 !important;
+    overflow: hidden !important;
+}
+
+.ef-preview-container .ef-card-img,
+.ef-modal-body .ef-preview-container .ef-card-img {
+    width: 100% !important;
+    height: 200px !important;
+    object-fit: cover !important;
+    display: block !important;
+}
+
+.ef-preview-container .ef-card-body,
+.ef-modal-body .ef-preview-container .ef-card-body {
+    padding: 1.5rem !important;
+}
+
+.ef-preview-container .ef-card-body h4,
+.ef-modal-body .ef-preview-container .ef-card-body h4 {
+    margin-top: 0 !important;
+    margin-bottom: 0.75rem !important;
+    color: var(--ef-text-primary) !important;
+}
+
+.ef-preview-container .ef-card-body p,
+.ef-modal-body .ef-preview-container .ef-card-body p {
+    margin-bottom: 0 !important;
+    color: var(--ef-text-secondary) !important;
+}
+
+.ef-preview-container .ef-card,
+.ef-modal-body .ef-preview-container .ef-card {
+    background: var(--ef-card-bg) !important;
+    border: 1px solid var(--ef-card-border) !important;
+    padding: 1.5rem !important;
+    border-radius: 8px !important;
+    margin: 1rem 0 !important;
+}
+
+.ef-preview-container .ef-card h4,
+.ef-modal-body .ef-preview-container .ef-card h4 {
+    color: var(--ef-text-primary) !important;
+    margin-top: 0 !important;
+}
+
+.ef-preview-container .ef-card p,
+.ef-modal-body .ef-preview-container .ef-card p {
+    color: var(--ef-text-secondary) !important;
+}
+
+/* ========== CARD GRID LAYOUTS - 3 VARIANTS ========== */
+/* Base Grid Styles */
+.ef-preview-container .ef-card-grid,
+.ef-modal-body .ef-preview-container .ef-card-grid {
+    margin: 2rem 0 !important;
+    gap: 1.5rem !important;
+}
+
+/* 2 Column Grid */
+.ef-preview-container .ef-card-grid-2col,
+.ef-modal-body .ef-preview-container .ef-card-grid-2col {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+}
+
+/* 3 Column Grid */
+.ef-preview-container .ef-card-grid-3col,
+.ef-modal-body .ef-preview-container .ef-card-grid-3col {
+    display: grid !important;
+    grid-template-columns: repeat(3, 1fr) !important;
+}
+
+/* Masonry Grid */
+.ef-preview-container .ef-card-grid-masonry,
+.ef-modal-body .ef-preview-container .ef-card-grid-masonry {
+    display: grid !important;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)) !important;
+    grid-auto-flow: dense !important;
+}
+
+/* Masonry Card Sizes */
+.ef-preview-container .ef-card-grid-masonry .ef-card-short,
+.ef-modal-body .ef-preview-container .ef-card-grid-masonry .ef-card-short {
+    grid-row: span 1 !important;
+}
+
+.ef-preview-container .ef-card-grid-masonry .ef-card-medium,
+.ef-modal-body .ef-preview-container .ef-card-grid-masonry .ef-card-medium {
+    grid-row: span 2 !important;
+}
+
+.ef-preview-container .ef-card-grid-masonry .ef-card-long,
+.ef-modal-body .ef-preview-container .ef-card-grid-masonry .ef-card-long {
+    grid-row: span 3 !important;
+}
+
+/* Grid Card Icon (berbeda dari card-icon yang sudah ada) */
+.ef-preview-container .ef-card-grid .ef-card-icon,
+.ef-modal-body .ef-preview-container .ef-card-grid .ef-card-icon {
+    width: 48px !important;
+    height: 48px !important;
+    background: linear-gradient(135deg, #3b82f6, #06b6d4) !important;
+    border-radius: 8px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    margin-bottom: 1rem !important;
+}
+
+.ef-preview-container .ef-card-grid .ef-card-icon i,
+.ef-modal-body .ef-preview-container .ef-card-grid .ef-card-icon i {
+    color: white !important;
+    font-size: 1.5rem !important;
+}
+
+.ef-preview-container .ef-card-grid .ef-card-icon svg,
+.ef-modal-body .ef-preview-container .ef-card-grid .ef-card-icon svg {
+    color: white !important;
+    font-size: 1.5rem !important;
+}
+
+/* Hover Effect untuk semua grid cards */
+.ef-preview-container .ef-card-grid .ef-card,
+.ef-modal-body .ef-preview-container .ef-card-grid .ef-card {
+    transition: all 0.3s ease !important;
+}
+
+.ef-preview-container .ef-card-grid .ef-card:hover,
+.ef-modal-body .ef-preview-container .ef-card-grid .ef-card:hover {
+    transform: translateY(-4px) !important;
+    box-shadow: 0 8px 16px rgba(99, 102, 241, 0.2) !important;
+}
+
+/* Responsive Breakpoints */
+@media (max-width: 1024px) {
+
+    .ef-preview-container .ef-card-grid-3col,
+    .ef-modal-body .ef-preview-container .ef-card-grid-3col {
+        grid-template-columns: repeat(2, 1fr) !important;
+    }
+}
+
+@media (max-width: 767px) {
+
+    .ef-preview-container .ef-card-grid-2col,
+    .ef-preview-container .ef-card-grid-3col,
+    .ef-modal-body .ef-preview-container .ef-card-grid-2col,
+    .ef-modal-body .ef-preview-container .ef-card-grid-3col {
+        grid-template-columns: 1fr !important;
+        gap: 1rem !important;
+    }
+
+    .ef-preview-container .ef-card-grid-masonry,
+    .ef-modal-body .ef-preview-container .ef-card-grid-masonry {
+        grid-template-columns: 1fr !important;
+    }
+
+    /* Reset masonry heights on mobile */
+    .ef-preview-container .ef-card-grid-masonry .ef-card-short,
+    .ef-preview-container .ef-card-grid-masonry .ef-card-medium,
+    .ef-preview-container .ef-card-grid-masonry .ef-card-long,
+    .ef-modal-body .ef-preview-container .ef-card-grid-masonry .ef-card-short,
+    .ef-modal-body .ef-preview-container .ef-card-grid-masonry .ef-card-medium,
+    .ef-modal-body .ef-preview-container .ef-card-grid-masonry .ef-card-long {
+        grid-row: span 1 !important;
+    }
+}
+
+.ef-preview-container .ef-card-icon,
+.ef-modal-body .ef-preview-container .ef-card-icon {
+    width: 48px !important;
+    height: 48px !important;
+    background: linear-gradient(135deg, #3b82f6, #06b6d4) !important;
+    border-radius: 8px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    margin-bottom: 1rem !important;
+}
+
+.ef-preview-container .ef-card-icon i,
+.ef-modal-body .ef-preview-container .ef-card-icon i {
+    color: white !important;
+    font-size: 1.5rem !important;
+}
+
+.ef-preview-container .ef-cta-block,
+.ef-modal-body .ef-preview-container .ef-cta-block {
+    background: var(--ef-cta-bg) !important;
+    backdrop-filter: blur(12px);
+    border: 2px solid rgba(99, 102, 241, 0.3) !important;
+    padding: 2rem !important;
+    border-radius: 12px !important;
+    text-align: center !important;
+    margin: 3rem 0 !important;
+}
+
+.ef-preview-container .ef-cta-block h3,
+.ef-modal-body .ef-preview-container .ef-cta-block h3 {
+    font-size: 1.75rem !important;
+    margin-bottom: 1rem !important;
+    color: var(--ef-cta-text) !important;
+}
+
+/* ========== CTA BLOCKS - 5 VARIANTS ========== */
+/* REPLACE/UPDATE bagian .ef-cta-block yang lama dengan ini */
+
+/* Base CTA Styles */
+.ef-preview-container .ef-cta-block,
+.ef-modal-body .ef-preview-container .ef-cta-block {
+    margin: 3rem 0 !important;
+    border-radius: 16px !important;
+    overflow: hidden !important;
+}
+
+.ef-preview-container .ef-cta-block h3,
+.ef-modal-body .ef-preview-container .ef-cta-block h3 {
+    margin-top: 0 !important;
+}
+
+.ef-preview-container .ef-cta-buttons,
+.ef-modal-body .ef-preview-container .ef-cta-buttons {
+    display: flex !important;
+    gap: 1rem !important;
+    flex-wrap: wrap !important;
+}
+
+.ef-preview-container .ef-cta-btn,
+.ef-modal-body .ef-preview-container .ef-cta-btn {
+    padding: 0.875rem 2rem !important;
+    border-radius: 8px !important;
+    text-decoration: none !important;
+    font-weight: 600 !important;
+    transition: all 0.3s ease !important;
+    display: inline-block !important;
+    font-size: 1rem !important;
+}
+
+.ef-preview-container .ef-cta-btn:hover,
+.ef-modal-body .ef-preview-container .ef-cta-btn:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2) !important;
+}
+
+.ef-preview-container .ef-cta-btn-primary,
+.ef-modal-body .ef-preview-container .ef-cta-btn-primary {
+    background: var(--ef-cta-btn-primary) !important;
+    color: white !important;
+    border: none !important;
+}
+
+.ef-preview-container .ef-cta-btn:not(.ef-cta-btn-primary),
+.ef-modal-body .ef-preview-container .ef-cta-btn:not(.ef-cta-btn-primary) {
+    background: var(--ef-cta-btn-secondary) !important;
+    color: var(--ef-cta-text) !important;
+    border: 2px solid var(--ef-cta-text) !important;
+}
+
+/* CTA Center - Classic centered layout */
+.ef-preview-container .ef-cta-center,
+.ef-modal-body .ef-preview-container .ef-cta-center {
+    background: var(--ef-cta-bg) !important;
+    backdrop-filter: blur(12px);
+    border: 2px solid rgba(99, 102, 241, 0.3) !important;
+    padding: 3rem 2rem !important;
+    text-align: center !important;
+}
+
+.ef-preview-container .ef-cta-center h3,
+.ef-modal-body .ef-preview-container .ef-cta-center h3 {
+    font-size: 2rem !important;
+    margin-bottom: 1rem !important;
+    color: var(--ef-cta-text) !important;
+}
+
+.ef-preview-container .ef-cta-center p,
+.ef-modal-body .ef-preview-container .ef-cta-center p {
+    font-size: 1.125rem !important;
+    margin-bottom: 2rem !important;
+    color: var(--ef-cta-text) !important;
+    opacity: 0.9 !important;
+}
+
+.ef-preview-container .ef-cta-center .ef-cta-buttons,
+.ef-modal-body .ef-preview-container .ef-cta-center .ef-cta-buttons {
+    justify-content: center !important;
+}
+
+/* CTA Split - Content left, buttons right */
+.ef-preview-container .ef-cta-split,
+.ef-modal-body .ef-preview-container .ef-cta-split {
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(139, 92, 246, 0.2)) !important;
+    border: 2px solid rgba(99, 102, 241, 0.4) !important;
+    padding: 2.5rem !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 2rem !important;
+}
+
+.ef-preview-container .ef-cta-split .ef-cta-content,
+.ef-modal-body .ef-preview-container .ef-cta-split .ef-cta-content {
+    flex: 1 !important;
+}
+
+.ef-preview-container .ef-cta-split h3,
+.ef-modal-body .ef-preview-container .ef-cta-split h3 {
+    font-size: 1.75rem !important;
+    margin-bottom: 0.75rem !important;
+    color: var(--ef-cta-text) !important;
+}
+
+.ef-preview-container .ef-cta-split p,
+.ef-modal-body .ef-preview-container .ef-cta-split p {
+    margin-bottom: 0 !important;
+    color: var(--ef-cta-text) !important;
+    opacity: 0.9 !important;
+}
+
+.ef-preview-container .ef-cta-split .ef-cta-buttons,
+.ef-modal-body .ef-preview-container .ef-cta-split .ef-cta-buttons {
+    flex-direction: column !important;
+    align-items: flex-end !important;
+}
+
+/* CTA Minimal - Simple and clean */
+.ef-preview-container .ef-cta-minimal,
+.ef-modal-body .ef-preview-container .ef-cta-minimal {
+    background: transparent !important;
+    border: 2px solid var(--ef-card-border) !important;
+    padding: 2rem !important;
+    text-align: center !important;
+}
+
+.ef-preview-container .ef-cta-minimal h3,
+.ef-modal-body .ef-preview-container .ef-cta-minimal h3 {
+    font-size: 1.5rem !important;
+    margin-bottom: 0.75rem !important;
+    color: var(--ef-text-primary) !important;
+}
+
+.ef-preview-container .ef-cta-minimal p,
+.ef-modal-body .ef-preview-container .ef-cta-minimal p {
+    margin-bottom: 1.5rem !important;
+    color: var(--ef-text-secondary) !important;
+    font-size: 1rem !important;
+}
+
+/* CTA Urgent - Attention-grabbing with badge */
+.ef-preview-container .ef-cta-urgent,
+.ef-modal-body .ef-preview-container .ef-cta-urgent {
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.2), rgba(220, 38, 38, 0.2)) !important;
+    border: 3px solid #ef4444 !important;
+    padding: 2.5rem 2rem !important;
+    text-align: center !important;
+    position: relative !important;
+    animation: pulse-border 2s infinite !important;
+}
+
+@keyframes pulse-border {
+
+    0%,
+    100% {
+        border-color: #ef4444;
+    }
+
+    50% {
+        border-color: #f97316;
+    }
+}
+
+.ef-preview-container .ef-cta-urgent .ef-cta-badge,
+.ef-modal-body .ef-preview-container .ef-cta-urgent .ef-cta-badge {
+    display: inline-block !important;
+    background: linear-gradient(135deg, #ef4444, #dc2626) !important;
+    color: white !important;
+    padding: 0.5rem 1.5rem !important;
+    border-radius: 50px !important;
+    font-size: 0.875rem !important;
+    font-weight: 700 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.05em !important;
+    margin-bottom: 1rem !important;
+    animation: pulse-badge 1.5s infinite !important;
+}
+
+@keyframes pulse-badge {
+
+    0%,
+    100% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.05);
+    }
+}
+
+.ef-preview-container .ef-cta-urgent h3,
+.ef-modal-body .ef-preview-container .ef-cta-urgent h3 {
+    font-size: 2rem !important;
+    margin-bottom: 1rem !important;
+    color: #fef2f2 !important;
+}
+
+.ef-preview-container .ef-cta-urgent p,
+.ef-modal-body .ef-preview-container .ef-cta-urgent p {
+    font-size: 1.125rem !important;
+    margin-bottom: 2rem !important;
+    color: #fef2f2 !important;
+}
+
+.ef-preview-container .ef-cta-urgent .ef-cta-buttons,
+.ef-modal-body .ef-preview-container .ef-cta-urgent .ef-cta-buttons {
+    justify-content: center !important;
+}
+
+/* CTA Newsletter - Email subscription form */
+.ef-preview-container .ef-cta-newsletter,
+.ef-modal-body .ef-preview-container .ef-cta-newsletter {
+    background: var(--ef-card-bg) !important;
+    border: 2px solid var(--ef-card-border) !important;
+    padding: 2.5rem 2rem !important;
+    text-align: center !important;
+}
+
+.ef-preview-container .ef-cta-newsletter h3,
+.ef-modal-body .ef-preview-container .ef-cta-newsletter h3 {
+    font-size: 1.75rem !important;
+    margin-bottom: 0.75rem !important;
+    color: var(--ef-text-primary) !important;
+}
+
+.ef-preview-container .ef-cta-newsletter p,
+.ef-modal-body .ef-preview-container .ef-cta-newsletter p {
+    margin-bottom: 1.5rem !important;
+    color: var(--ef-text-secondary) !important;
+}
+
+.ef-preview-container .ef-newsletter-form,
+.ef-modal-body .ef-preview-container .ef-newsletter-form {
+    display: flex !important;
+    gap: 0.75rem !important;
+    max-width: 500px !important;
+    margin: 0 auto !important;
+    flex-wrap: wrap !important;
+    justify-content: center !important;
+}
+
+.ef-preview-container .ef-newsletter-input,
+.ef-modal-body .ef-preview-container .ef-newsletter-input {
+    flex: 1 !important;
+    min-width: 250px !important;
+    padding: 0.875rem 1.25rem !important;
+    border: 2px solid var(--ef-card-border) !important;
+    border-radius: 8px !important;
+    background: rgba(255, 255, 255, 0.05) !important;
+    color: var(--ef-text-primary) !important;
+    font-size: 1rem !important;
+    transition: all 0.2s ease !important;
+}
+
+.ef-preview-container .ef-newsletter-input:focus,
+.ef-modal-body .ef-preview-container .ef-newsletter-input:focus {
+    outline: none !important;
+    border-color: #6366f1 !important;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2) !important;
+}
+
+.ef-preview-container .ef-newsletter-input::placeholder,
+.ef-modal-body .ef-preview-container .ef-newsletter-input::placeholder {
+    color: var(--ef-text-secondary) !important;
+    opacity: 0.6 !important;
+}
+
+.ef-preview-container .ef-newsletter-form .ef-cta-btn,
+.ef-modal-body .ef-preview-container .ef-newsletter-form .ef-cta-btn {
+    flex-shrink: 0 !important;
+}
+
+/* Responsive CTA Styles */
+@media (max-width: 767px) {
+
+    .ef-preview-container .ef-cta-split,
+    .ef-modal-body .ef-preview-container .ef-cta-split {
+        flex-direction: column !important;
+        text-align: center !important;
+    }
+
+    .ef-preview-container .ef-cta-split .ef-cta-buttons,
+    .ef-modal-body .ef-preview-container .ef-cta-split .ef-cta-buttons {
+        align-items: center !important;
+        width: 100% !important;
+    }
+
+    .ef-preview-container .ef-cta-buttons,
+    .ef-modal-body .ef-preview-container .ef-cta-buttons {
+        flex-direction: column !important;
+        width: 100% !important;
+    }
+
+    .ef-preview-container .ef-cta-btn,
+    .ef-modal-body .ef-preview-container .ef-cta-btn {
+        width: 100% !important;
+        text-align: center !important;
+    }
+
+    .ef-preview-container .ef-newsletter-form,
+    .ef-modal-body .ef-preview-container .ef-newsletter-form {
+        flex-direction: column !important;
+    }
+
+    .ef-preview-container .ef-newsletter-input,
+    .ef-modal-body .ef-preview-container .ef-newsletter-input {
+        min-width: 100% !important;
+    }
+
+    .ef-preview-container .ef-cta-center,
+    .ef-preview-container .ef-cta-urgent,
+    .ef-preview-container .ef-cta-minimal,
+    .ef-preview-container .ef-cta-newsletter,
+    .ef-modal-body .ef-preview-container .ef-cta-center,
+    .ef-modal-body .ef-preview-container .ef-cta-urgent,
+    .ef-modal-body .ef-preview-container .ef-cta-minimal,
+    .ef-modal-body .ef-preview-container .ef-cta-newsletter {
+        padding: 2rem 1.5rem !important;
+    }
+
+    .ef-preview-container .ef-cta-center h3,
+    .ef-preview-container .ef-cta-urgent h3,
+    .ef-modal-body .ef-preview-container .ef-cta-center h3,
+    .ef-modal-body .ef-preview-container .ef-cta-urgent h3 {
+        font-size: 1.5rem !important;
+    }
+}
+
+.ef-preview-container .ef-cta-buttons,
+.ef-modal-body .ef-preview-container .ef-cta-buttons {
+    display: flex !important;
+    gap: 1rem !important;
+    justify-content: center !important;
+    flex-wrap: wrap !important;
+}
+
+.ef-preview-container .ef-cta-btn,
+.ef-modal-body .ef-preview-container .ef-cta-btn {
+    padding: 0.75rem 1.5rem !important;
+    border-radius: 8px !important;
+    text-decoration: none !important;
+    font-weight: 600 !important;
+    transition: all 0.2s ease !important;
+    display: inline-block !important;
+}
+
+.ef-preview-container .ef-cta-btn-primary,
+.ef-modal-body .ef-preview-container .ef-cta-btn-primary {
+    background: var(--ef-cta-btn-primary) !important;
+    color: white !important;
+}
+
+.ef-preview-container .ef-cta-btn:not(.ef-cta-btn-primary),
+.ef-modal-body .ef-preview-container .ef-cta-btn:not(.ef-cta-btn-primary) {
+    background: var(--ef-cta-btn-secondary) !important;
+    color: var(--ef-cta-text) !important;
+    border: 2px solid var(--ef-cta-text) !important;
+}
+
+/* ========== TABLE VARIANTS - 3 TYPES ========== */
+/* REPLACE/UPDATE bagian .ef-table yang lama dengan ini */
+
+/* Base Table Styles */
+.ef-preview-container .ef-table,
+.ef-modal-body .ef-preview-container .ef-table {
+    width: 100% !important;
+    border-collapse: collapse !important;
+    margin: 2rem 0 !important;
+    border-radius: 12px !important;
+    overflow: hidden !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+}
+
+.ef-preview-container .ef-table th,
+.ef-modal-body .ef-preview-container .ef-table th {
+    padding: 1rem 1.25rem !important;
+    text-align: left !important;
+    font-weight: 600 !important;
+    font-size: 0.9375rem !important;
+    color: var(--ef-text-primary) !important;
+}
+
+.ef-preview-container .ef-table td,
+.ef-modal-body .ef-preview-container .ef-table td {
+    padding: 0.875rem 1.25rem !important;
+    color: var(--ef-text-secondary) !important;
+    font-size: 0.9375rem !important;
+}
+
+/* Table Basic - Classic style with header background */
+.ef-preview-container .ef-table-basic thead,
+.ef-modal-body .ef-preview-container .ef-table-basic thead {
+    background: var(--ef-table-header-bg) !important;
+}
+
+.ef-preview-container .ef-table-basic th,
+.ef-modal-body .ef-preview-container .ef-table-basic th {
+    border-bottom: 2px solid rgba(99, 102, 241, 0.3) !important;
+}
+
+.ef-preview-container .ef-table-basic tbody,
+.ef-modal-body .ef-preview-container .ef-table-basic tbody {
+    background: var(--ef-card-bg) !important;
+}
+
+.ef-preview-container .ef-table-basic td,
+.ef-modal-body .ef-preview-container .ef-table-basic td {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+}
+
+.ef-preview-container .ef-table-basic tbody tr:last-child td,
+.ef-modal-body .ef-preview-container .ef-table-basic tbody tr:last-child td {
+    border-bottom: none !important;
+}
+
+/* Table Striped - Alternating row colors */
+.ef-preview-container .ef-table-striped thead,
+.ef-modal-body .ef-preview-container .ef-table-striped thead {
+    background: var(--ef-table-header-bg) !important;
+}
+
+.ef-preview-container .ef-table-striped th,
+.ef-modal-body .ef-preview-container .ef-table-striped th {
+    color: var(--ef-text-primary) !important;
+    text-transform: uppercase !important;
+    font-size: 0.875rem !important;
+    letter-spacing: 0.05em !important;
+}
+
+.ef-preview-container .ef-table-striped tbody tr:nth-child(odd),
+.ef-modal-body .ef-preview-container .ef-table-striped tbody tr:nth-child(odd) {
+    background: var(--ef-card-bg) !important;
+}
+
+.ef-preview-container .ef-table-striped tbody tr:nth-child(even),
+.ef-modal-body .ef-preview-container .ef-table-striped tbody tr:nth-child(even) {
+    background: color-mix(in srgb, var(--ef-card-bg) 80%, gray) !important;
+}
+
+.ef-preview-container .ef-table-striped tbody tr:hover,
+.ef-modal-body .ef-preview-container .ef-table-striped tbody tr:hover {
+    background: rgba(99, 102, 241, 0.1) !important;
+    transition: background 0.2s ease !important;
+}
+
+/* Table Comparison - Highlighted columns for comparison */
+.ef-preview-container .ef-table-comparison,
+.ef-modal-body .ef-preview-container .ef-table-comparison {
+    border: 2px solid rgba(99, 102, 241, 0.3) !important;
+}
+
+.ef-preview-container .ef-table-comparison thead,
+.ef-modal-body .ef-preview-container .ef-table-comparison thead {
+    background: var(--ef-table-header-bg) !important;
+}
+
+.ef-preview-container .ef-table-comparison th,
+.ef-modal-body .ef-preview-container .ef-table-comparison th {
+    border-right: 1px solid rgba(255, 255, 255, 0.1) !important;
+    text-align: center !important;
+    font-weight: 700 !important;
+    background: color-mix(in srgb, var(--ef-table-header-bg) 80%, blue);
+
+}
+
+.ef-preview-container .ef-table-comparison th:first-child,
+.ef-modal-body .ef-preview-container .ef-table-comparison th:first-child {
+    text-align: left !important;
+    background: color-mix(in srgb, var(--ef-table-header-bg) 85%, blue) !important;
+}
+
+.ef-preview-container .ef-table-comparison td,
+.ef-modal-body .ef-preview-container .ef-table-comparison td {
+    border-right: 1px solid rgba(255, 255, 255, 0.05) !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+    text-align: center !important;
+    background: var(--ef-card-bg) !important;
+}
+
+.ef-preview-container .ef-table-comparison td:first-child,
+.ef-modal-body .ef-preview-container .ef-table-comparison td:first-child {
+    text-align: left !important;
+    font-weight: 600 !important;
+    background: var(--ef-card-bg) !important;
+}
+
+.ef-preview-container .ef-table-comparison th:last-child,
+.ef-preview-container .ef-table-comparison td:last-child,
+.ef-modal-body .ef-preview-container .ef-table-comparison th:last-child,
+.ef-modal-body .ef-preview-container .ef-table-comparison td:last-child {
+    border-right: none !important;
+}
+
+.ef-preview-container .ef-table-comparison tbody tr:last-child td,
+.ef-modal-body .ef-preview-container .ef-table-comparison tbody tr:last-child td {
+    border-bottom: none !important;
+}
+
+/* Highlight last column for premium/featured plan */
+.ef-preview-container .ef-table-comparison th:last-child,
+.ef-modal-body .ef-preview-container .ef-table-comparison th:last-child {
+    background: color-mix(in srgb, var(--ef-table-header-bg) 75%, blue) !important;
+    color: white !important;
+}
+
+.ef-preview-container .ef-table-comparison td:last-child,
+.ef-modal-body .ef-preview-container .ef-table-comparison td:last-child {
+    background: var(--ef-card-bg) !important;
+    font-weight: 600 !important;
+    color: var(--ef-text-primary) !important;
+}
+
+/* Responsive Table Styles */
+/* Responsive Table Styles - COMPLETE REWRITE */
+@media (max-width: 1024px) {
+
+    .ef-preview-container .ef-table,
+    .ef-modal-body .ef-preview-container .ef-table {
+        font-size: 0.875rem !important;
+    }
+
+    .ef-preview-container .ef-table th,
+    .ef-preview-container .ef-table td,
+    .ef-modal-body .ef-preview-container .ef-table th,
+    .ef-modal-body .ef-preview-container .ef-table td {
+        padding: 0.75rem 0.875rem !important;
+        font-size: 0.8125rem !important;
+    }
+}
+
+@media (max-width: 767px) {
+
+    /* Wrapper for horizontal scroll */
+    .ef-preview-container .ef-table,
+    .ef-modal-body .ef-preview-container .ef-table {
+        display: block !important;
+        overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+        white-space: nowrap !important;
+    }
+
+    .ef-preview-container .ef-table thead,
+    .ef-preview-container .ef-table tbody,
+    .ef-preview-container .ef-table tr,
+    .ef-modal-body .ef-preview-container .ef-table thead,
+    .ef-modal-body .ef-preview-container .ef-table tbody,
+    .ef-modal-body .ef-preview-container .ef-table tr {
+        display: table !important;
+        width: 100% !important;
+    }
+
+    .ef-preview-container .ef-table th,
+    .ef-preview-container .ef-table td,
+    .ef-modal-body .ef-preview-container .ef-table th,
+    .ef-modal-body .ef-preview-container .ef-table td {
+        display: table-cell !important;
+        white-space: nowrap !important;
+        min-width: 100px !important;
+    }
+
+    /* Scrollbar for mobile table */
+    .ef-preview-container .ef-table::-webkit-scrollbar,
+    .ef-modal-body .ef-preview-container .ef-table::-webkit-scrollbar {
+        height: 6px !important;
+    }
+
+    .ef-preview-container .ef-table::-webkit-scrollbar-track,
+    .ef-modal-body .ef-preview-container .ef-table::-webkit-scrollbar-track {
+        background: rgba(255, 255, 255, 0.05) !important;
+    }
+
+    .ef-preview-container .ef-table::-webkit-scrollbar-thumb,
+    .ef-modal-body .ef-preview-container .ef-table::-webkit-scrollbar-thumb {
+        background: rgba(99, 102, 241, 0.5) !important;
+        border-radius: 3px !important;
+    }
+}
+
+/* ========== TIMELINE COMPONENTS - 2 VARIANTS ========== */
+/* TAMBAHKAN setelah table styles */
+
+/* Base Timeline Styles */
+.ef-preview-container .ef-timeline,
+.ef-modal-body .ef-preview-container .ef-timeline {
+    margin: 3rem 0 !important;
+    position: relative !important;
+}
+
+.ef-preview-container .ef-timeline-item,
+.ef-modal-body .ef-preview-container .ef-timeline-item {
+    position: relative !important;
+    opacity: 1 !important;
+}
+
+.ef-preview-container .ef-timeline-marker,
+.ef-modal-body .ef-preview-container .ef-timeline-marker {
+    width: 16px !important;
+    height: 16px !important;
+    background: linear-gradient(135deg, #6366f1, #8b5cf6) !important;
+    border: 3px solid var(--ef-card-bg) !important;
+    border-radius: 50% !important;
+    position: absolute !important;
+    z-index: 2 !important;
+    transition: all 0.3s ease !important;
+}
+
+.ef-preview-container .ef-timeline-item:hover .ef-timeline-marker,
+.ef-modal-body .ef-preview-container .ef-timeline-item:hover .ef-timeline-marker {
+    transform: scale(1.3) !important;
+    box-shadow: 0 0 0 8px rgba(99, 102, 241, 0.2) !important;
+}
+
+.ef-preview-container .ef-timeline-content,
+.ef-modal-body .ef-preview-container .ef-timeline-content {
+    background: var(--ef-card-bg) !important;
+    border: 1px solid var(--ef-card-border) !important;
+    border-radius: 12px !important;
+    padding: 1.5rem !important;
+    transition: all 0.3s ease !important;
+}
+
+.ef-preview-container .ef-timeline-item:hover .ef-timeline-content,
+.ef-modal-body .ef-preview-container .ef-timeline-item:hover .ef-timeline-content {
+    transform: translateY(-4px) !important;
+    box-shadow: 0 8px 16px rgba(99, 102, 241, 0.2) !important;
+    border-color: #6366f1 !important;
+}
+
+.ef-preview-container .ef-timeline-date,
+.ef-modal-body .ef-preview-container .ef-timeline-date {
+    display: inline-block !important;
+    background: linear-gradient(135deg, #6366f1, #8b5cf6) !important;
+    color: white !important;
+    padding: 0.375rem 0.875rem !important;
+    border-radius: 6px !important;
+    font-size: 0.875rem !important;
+    font-weight: 700 !important;
+    margin-bottom: 0.75rem !important;
+}
+
+.ef-preview-container .ef-timeline-content h4,
+.ef-modal-body .ef-preview-container .ef-timeline-content h4 {
+    color: var(--ef-text-primary) !important;
+    margin: 0 0 0.5rem 0 !important;
+    font-size: 1.25rem !important;
+}
+
+.ef-preview-container .ef-timeline-content p,
+.ef-modal-body .ef-preview-container .ef-timeline-content p {
+    color: var(--ef-text-secondary) !important;
+    margin: 0 !important;
+    line-height: 1.6 !important;
+}
+
+/* Vertical Timeline */
+.ef-preview-container .ef-timeline-vertical,
+.ef-modal-body .ef-preview-container .ef-timeline-vertical {
+    padding-left: 2rem !important;
+}
+
+.ef-preview-container .ef-timeline-vertical::before,
+.ef-modal-body .ef-preview-container .ef-timeline-vertical::before {
+    content: '' !important;
+    position: absolute !important;
+    left: 8px !important;
+    top: 0 !important;
+    bottom: 0 !important;
+    width: 2px !important;
+    background: linear-gradient(180deg, #6366f1, #8b5cf6) !important;
+}
+
+.ef-preview-container .ef-timeline-vertical .ef-timeline-item,
+.ef-modal-body .ef-preview-container .ef-timeline-vertical .ef-timeline-item {
+    margin-bottom: 2.5rem !important;
+    padding-left: 2.5rem !important;
+}
+
+.ef-preview-container .ef-timeline-vertical .ef-timeline-marker,
+.ef-modal-body .ef-preview-container .ef-timeline-vertical .ef-timeline-marker {
+    left: 0 !important;
+    top: 8px !important;
+}
+
+/* Vertical Timeline - Alternating Sides */
+
+.ef-preview-container .ef-timeline-vertical .ef-timeline-right,
+.ef-modal-body .ef-preview-container .ef-timeline-vertical .ef-timeline-right {
+    animation-delay: 0.2s !important;
+}
+
+.ef-preview-container .ef-timeline-vertical .ef-timeline-item:nth-child(2),
+.ef-modal-body .ef-preview-container .ef-timeline-vertical .ef-timeline-item:nth-child(2) {
+    animation-delay: 0.3s !important;
+}
+
+.ef-preview-container .ef-timeline-vertical .ef-timeline-item:nth-child(3),
+.ef-modal-body .ef-preview-container .ef-timeline-vertical .ef-timeline-item:nth-child(3) {
+    animation-delay: 0.5s !important;
+}
+
+.ef-preview-container .ef-timeline-vertical .ef-timeline-item:nth-child(4),
+.ef-modal-body .ef-preview-container .ef-timeline-vertical .ef-timeline-item:nth-child(4) {
+    animation-delay: 0.7s !important;
+}
+
+.ef-preview-container .ef-timeline-vertical .ef-timeline-item:nth-child(5),
+.ef-modal-body .ef-preview-container .ef-timeline-vertical .ef-timeline-item:nth-child(5) {
+    animation-delay: 0.9s !important;
+}
+
+/* Horizontal Timeline */
+.ef-preview-container .ef-timeline-horizontal,
+.ef-modal-body .ef-preview-container .ef-timeline-horizontal {
+    display: flex !important;
+    gap: 2rem !important;
+    overflow-x: auto !important;
+    padding: 2rem 0 !important;
+    position: relative !important;
+    -webkit-overflow-scrolling: touch !important;
+}
+
+.ef-preview-container .ef-timeline-horizontal::before,
+.ef-modal-body .ef-preview-container .ef-timeline-horizontal::before {
+    content: '' !important;
+    position: absolute !important;
+    left: 0 !important;
+    right: 0 !important;
+    top: 8px !important;
+    height: 2px !important;
+    background: linear-gradient(90deg, #6366f1, #8b5cf6) !important;
+}
+
+.ef-preview-container .ef-timeline-horizontal .ef-timeline-item,
+.ef-modal-body .ef-preview-container .ef-timeline-horizontal .ef-timeline-item {
+    flex-shrink: 0 !important;
+    width: 280px !important;
+    padding-top: 2rem !important;
+}
+
+.ef-preview-container .ef-timeline-horizontal .ef-timeline-marker,
+.ef-modal-body .ef-preview-container .ef-timeline-horizontal .ef-timeline-marker {
+    left: 50% !important;
+    top: 0 !important;
+    transform: translateX(-50%) !important;
+}
+
+.ef-preview-container .ef-timeline-horizontal .ef-timeline-item:hover .ef-timeline-marker,
+.ef-modal-body .ef-preview-container .ef-timeline-horizontal .ef-timeline-item:hover .ef-timeline-marker {
+    transform: translateX(-50%) scale(1.3) !important;
+}
+
+.ef-preview-container .ef-timeline-horizontal .ef-timeline-item:nth-child(1),
+.ef-modal-body .ef-preview-container .ef-timeline-horizontal .ef-timeline-item:nth-child(1) {
+    animation-delay: 0.1s !important;
+}
+
+.ef-preview-container .ef-timeline-horizontal .ef-timeline-item:nth-child(2),
+.ef-modal-body .ef-preview-container .ef-timeline-horizontal .ef-timeline-item:nth-child(2) {
+    animation-delay: 0.2s !important;
+}
+
+.ef-preview-container .ef-timeline-horizontal .ef-timeline-item:nth-child(3),
+.ef-modal-body .ef-preview-container .ef-timeline-horizontal .ef-timeline-item:nth-child(3) {
+    animation-delay: 0.3s !important;
+}
+
+.ef-preview-container .ef-timeline-horizontal .ef-timeline-item:nth-child(4),
+.ef-modal-body .ef-preview-container .ef-timeline-horizontal .ef-timeline-item:nth-child(4) {
+    animation-delay: 0.4s !important;
+}
+
+/* Scrollbar for horizontal timeline */
+.ef-preview-container .ef-timeline-horizontal::-webkit-scrollbar,
+.ef-modal-body .ef-preview-container .ef-timeline-horizontal::-webkit-scrollbar {
+    height: 8px !important;
+}
+
+.ef-preview-container .ef-timeline-horizontal::-webkit-scrollbar-track,
+.ef-modal-body .ef-preview-container .ef-timeline-horizontal::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05) !important;
+    border-radius: 4px !important;
+}
+
+.ef-preview-container .ef-timeline-horizontal::-webkit-scrollbar-thumb,
+.ef-modal-body .ef-preview-container .ef-timeline-horizontal::-webkit-scrollbar-thumb {
+    background: rgba(99, 102, 241, 0.5) !important;
+    border-radius: 4px !important;
+}
+
+/* Responsive Timeline */
+@media (max-width: 767px) {
+
+    .ef-preview-container .ef-timeline-vertical,
+    .ef-modal-body .ef-preview-container .ef-timeline-vertical {
+        padding-left: 1.5rem !important;
+    }
+
+    .ef-preview-container .ef-timeline-vertical .ef-timeline-item,
+    .ef-modal-body .ef-preview-container .ef-timeline-vertical .ef-timeline-item {
+        padding-left: 2rem !important;
+        margin-bottom: 2rem !important;
+    }
+
+    .ef-preview-container .ef-timeline-content,
+    .ef-modal-body .ef-preview-container .ef-timeline-content {
+        padding: 1.25rem !important;
+    }
+
+    .ef-preview-container .ef-timeline-horizontal .ef-timeline-item,
+    .ef-modal-body .ef-preview-container .ef-timeline-horizontal .ef-timeline-item {
+        width: 240px !important;
+    }
+}
+
+/* ========== ACCORDION COMPONENTS - 2 VARIANTS ========== */
+/* TAMBAHKAN setelah timeline styles */
+
+/* Base Accordion Styles */
+.ef-preview-container .ef-accordion,
+.ef-modal-body .ef-preview-container .ef-accordion {
+    margin: 2rem 0 !important;
+}
+
+.ef-preview-container .ef-accordion-item,
+.ef-modal-body .ef-preview-container .ef-accordion-item {
+    margin-bottom: 1rem !important;
+    border-radius: 12px !important;
+    overflow: hidden !important;
+    transition: all 0.3s ease !important;
+}
+
+.ef-preview-container .ef-accordion-header,
+.ef-modal-body .ef-preview-container .ef-accordion-header {
+    background: var(--ef-card-bg) !important;
+    border: 1px solid var(--ef-card-border) !important;
+    padding: 1.25rem 1.5rem !important;
+    cursor: pointer !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 1rem !important;
+    transition: all 0.3s ease !important;
+    user-select: none !important;
+}
+
+.ef-preview-container .ef-accordion-header:hover,
+.ef-modal-body .ef-preview-container .ef-accordion-header:hover {
+    background: rgba(99, 102, 241, 0.1) !important;
+    border-color: #6366f1 !important;
+}
+
+.ef-preview-container .ef-accordion-icon,
+.ef-modal-body .ef-preview-container .ef-accordion-icon {
+    color: #6366f1 !important;
+    font-size: 1.125rem !important;
+    flex-shrink: 0 !important;
+}
+
+.ef-preview-container .ef-accordion-header span,
+.ef-modal-body .ef-preview-container .ef-accordion-header span {
+    flex: 1 !important;
+    color: var(--ef-text-primary) !important;
+    font-weight: 600 !important;
+    font-size: 1.0625rem !important;
+}
+
+.ef-preview-container .ef-accordion-arrow,
+.ef-modal-body .ef-preview-container .ef-accordion-arrow {
+    color: var(--ef-text-secondary) !important;
+    font-size: 1rem !important;
+    transition: transform 0.3s ease !important;
+    flex-shrink: 0 !important;
+}
+
+.ef-preview-container .ef-accordion-open .ef-accordion-arrow,
+.ef-modal-body .ef-preview-container .ef-accordion-open .ef-accordion-arrow {
+    transform: rotate(180deg) !important;
+}
+
+.ef-preview-container .ef-accordion-content,
+.ef-modal-body .ef-preview-container .ef-accordion-content {
+    max-height: 0 !important;
+    overflow: hidden !important;
+    transition: max-height 0.4s ease, padding 0.4s ease !important;
+    background: var(--ef-card-bg) !important;
+    border: 1px solid var(--ef-card-border) !important;
+    border-top: none !important;
+}
+
+.ef-preview-container .ef-accordion-open .ef-accordion-content,
+.ef-modal-body .ef-preview-container .ef-accordion-open .ef-accordion-content {
+    max-height: 500px !important;
+    padding: 1.5rem !important;
+    border-color: #6366f1 !important;
+}
+
+.ef-preview-container .ef-accordion-content p,
+.ef-modal-body .ef-preview-container .ef-accordion-content p {
+    color: var(--ef-text-secondary) !important;
+    line-height: 1.7 !important;
+    margin: 0 !important;
+}
+
+/* FAQ Accordion - Special styling */
+.ef-preview-container .ef-accordion-faq .ef-accordion-item,
+.ef-modal-body .ef-preview-container .ef-accordion-faq .ef-accordion-item {
+    background: rgba(59, 130, 246, 0.05) !important;
+    border-radius: 12px !important;
+}
+
+.ef-preview-container .ef-accordion-faq .ef-accordion-header,
+.ef-modal-body .ef-preview-container .ef-accordion-faq .ef-accordion-header {
+    background: transparent !important;
+    border: none !important;
+}
+
+.ef-preview-container .ef-accordion-faq .ef-accordion-content,
+.ef-modal-body .ef-preview-container .ef-accordion-faq .ef-accordion-content {
+    background: transparent !important;
+    border: none !important;
+}
+
+.ef-preview-container .ef-accordion-faq .ef-accordion-icon,
+.ef-modal-body .ef-preview-container .ef-accordion-faq .ef-accordion-icon {
+    color: #3b82f6 !important;
+}
+
+.ef-preview-container .ef-accordion-faq .ef-accordion-open,
+.ef-modal-body .ef-preview-container .ef-accordion-faq .ef-accordion-open {
+    background: rgba(59, 130, 246, 0.1) !important;
+}
+
+/* Simple Accordion - Minimal styling */
+.ef-preview-container .ef-accordion-simple .ef-accordion-header,
+.ef-modal-body .ef-preview-container .ef-accordion-simple .ef-accordion-header {
+    border-left: 4px solid transparent !important;
+}
+
+.ef-preview-container .ef-accordion-simple .ef-accordion-header:hover,
+.ef-modal-body .ef-preview-container .ef-accordion-simple .ef-accordion-header:hover {
+    border-left-color: #6366f1 !important;
+}
+
+.ef-preview-container .ef-accordion-simple .ef-accordion-open .ef-accordion-header,
+.ef-modal-body .ef-preview-container .ef-accordion-simple .ef-accordion-open .ef-accordion-header {
+    border-left-color: #6366f1 !important;
+    background: rgba(99, 102, 241, 0.08) !important;
+}
+
+/* Responsive Accordion */
+@media (max-width: 767px) {
+
+    .ef-preview-container .ef-accordion-header,
+    .ef-modal-body .ef-preview-container .ef-accordion-header {
+        padding: 1rem 1.25rem !important;
+    }
+
+    .ef-preview-container .ef-accordion-header span,
+    .ef-modal-body .ef-preview-container .ef-accordion-header span {
+        font-size: 0.9375rem !important;
+    }
+
+    .ef-preview-container .ef-accordion-open .ef-accordion-content,
+    .ef-modal-body .ef-preview-container .ef-accordion-open .ef-accordion-content {
+        padding: 1.25rem !important;
+    }
+
+    .ef-preview-container .ef-accordion-icon,
+    .ef-modal-body .ef-preview-container .ef-accordion-icon {
+        font-size: 1rem !important;
+    }
+}
+
+/* ========== POLL / REACTION COMPONENTS - 3 VARIANTS ========== */
+/* TAMBAHKAN setelah accordion styles */
+
+/* Base Poll Styles */
+.ef-preview-container .ef-poll,
+.ef-modal-body .ef-preview-container .ef-poll {
+    margin: 2.5rem 0 !important;
+    padding: 2rem !important;
+    background: var(--ef-card-bg) !important;
+    border: 2px solid var(--ef-card-border) !important;
+    border-radius: 16px !important;
+    text-align: center !important;
+}
+
+.ef-preview-container .ef-poll-question,
+.ef-modal-body .ef-preview-container .ef-poll-question {
+    font-size: 1.25rem !important;
+    font-weight: 600 !important;
+    color: var(--ef-text-primary) !important;
+    margin-bottom: 1.5rem !important;
+}
+
+.ef-preview-container .ef-poll-options,
+.ef-modal-body .ef-preview-container .ef-poll-options {
+    display: flex !important;
+    gap: 1rem !important;
+    justify-content: center !important;
+    flex-wrap: wrap !important;
+}
+
+.ef-preview-container .ef-poll-option,
+.ef-modal-body .ef-preview-container .ef-poll-option {
+    cursor: pointer !important;
+    transition: all 0.3s ease !important;
+    user-select: none !important;
+}
+
+.ef-preview-container .ef-poll-option:hover,
+.ef-modal-body .ef-preview-container .ef-poll-option:hover {
+    transform: translateY(-4px) scale(1.05) !important;
+}
+
+.ef-preview-container .ef-poll-option:active,
+.ef-modal-body .ef-preview-container .ef-poll-option:active {
+    transform: translateY(0) scale(0.95) !important;
+}
+
+/* Emoji Reactions Poll */
+.ef-preview-container .ef-poll-emoji .ef-poll-option,
+.ef-modal-body .ef-preview-container .ef-poll-emoji .ef-poll-option {
+    background: rgba(255, 255, 255, 0.05) !important;
+    border: 2px solid rgba(255, 255, 255, 0.1) !important;
+    border-radius: 12px !important;
+    padding: 1rem 1.5rem !important;
+    min-width: 100px !important;
+}
+
+.ef-preview-container .ef-poll-emoji .ef-poll-option-value,
+.ef-modal-body .ef-preview-container .ef-poll-emoji .ef-poll-option-value {
+    font-size: 2.5rem !important;
+    margin-bottom: 0.5rem !important;
+}
+
+.ef-preview-container .ef-poll-emoji .ef-poll-option-label,
+.ef-modal-body .ef-preview-container .ef-poll-emoji .ef-poll-option-label {
+    font-size: 0.875rem !important;
+    color: var(--ef-text-secondary) !important;
+    font-weight: 500 !important;
+}
+
+.ef-preview-container .ef-poll-emoji .ef-poll-option:hover,
+.ef-modal-body .ef-preview-container .ef-poll-emoji .ef-poll-option:hover {
+    background: rgba(99, 102, 241, 0.1) !important;
+    border-color: #6366f1 !important;
+}
+
+.ef-preview-container .ef-poll-emoji .ef-poll-selected,
+.ef-modal-body .ef-preview-container .ef-poll-emoji .ef-poll-selected {
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.3), rgba(139, 92, 246, 0.3)) !important;
+    border-color: #6366f1 !important;
+    box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.2) !important;
+}
+
+.ef-preview-container .ef-poll-emoji .ef-poll-selected .ef-poll-option-value,
+.ef-modal-body .ef-preview-container .ef-poll-emoji .ef-poll-selected .ef-poll-option-value {
+    animation: bounce 0.5s ease !important;
+}
+
+@keyframes bounce {
+
+    0%,
+    100% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.2);
+    }
+}
+
+/* Star Rating Poll */
+.ef-preview-container .ef-poll-rating .ef-poll-options,
+.ef-modal-body .ef-preview-container .ef-poll-rating .ef-poll-options {
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 0.75rem !important;
+}
+
+.ef-preview-container .ef-poll-rating .ef-poll-option,
+.ef-modal-body .ef-preview-container .ef-poll-rating .ef-poll-option {
+    background: rgba(255, 255, 255, 0.03) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border-radius: 50px !important;
+    padding: 0.75rem 2rem !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 1rem !important;
+    width: 100% !important;
+    max-width: 400px !important;
+}
+
+.ef-preview-container .ef-poll-rating .ef-poll-option-value,
+.ef-modal-body .ef-preview-container .ef-poll-rating .ef-poll-option-value {
+    font-size: 1.5rem !important;
+    line-height: 1 !important;
+}
+
+.ef-preview-container .ef-poll-rating .ef-poll-option-label,
+.ef-modal-body .ef-preview-container .ef-poll-rating .ef-poll-option-label {
+    flex: 1 !important;
+    text-align: left !important;
+    color: var(--ef-text-secondary) !important;
+    font-size: 0.9375rem !important;
+}
+
+.ef-preview-container .ef-poll-rating .ef-poll-option:hover,
+.ef-modal-body .ef-preview-container .ef-poll-rating .ef-poll-option:hover {
+    background: rgba(251, 191, 36, 0.1) !important;
+    border-color: #fbbf24 !important;
+}
+
+.ef-preview-container .ef-poll-rating .ef-poll-selected,
+.ef-modal-body .ef-preview-container .ef-poll-rating .ef-poll-selected {
+    background: linear-gradient(135deg, rgba(251, 191, 36, 0.2), rgba(245, 158, 11, 0.2)) !important;
+    border-color: #fbbf24 !important;
+    box-shadow: 0 4px 12px rgba(251, 191, 36, 0.3) !important;
+}
+
+.ef-preview-container .ef-poll-rating .ef-poll-selected .ef-poll-option-label,
+.ef-modal-body .ef-preview-container .ef-poll-rating .ef-poll-selected .ef-poll-option-label {
+    color: #fbbf24 !important;
+    font-weight: 600 !important;
+}
+
+/* Vote Poll */
+.ef-preview-container .ef-poll-vote .ef-poll-options,
+.ef-modal-body .ef-preview-container .ef-poll-vote .ef-poll-options {
+    flex-direction: column !important;
+    gap: 0.75rem !important;
+    width: 100% !important;
+}
+
+.ef-preview-container .ef-poll-vote .ef-poll-option,
+.ef-modal-body .ef-preview-container .ef-poll-vote .ef-poll-option {
+    background: rgba(255, 255, 255, 0.05) !important;
+    border: 2px solid rgba(255, 255, 255, 0.1) !important;
+    border-radius: 12px !important;
+    padding: 1.25rem 1.5rem !important;
+    text-align: left !important;
+    position: relative !important;
+    overflow: hidden !important;
+}
+
+.ef-preview-container .ef-poll-vote .ef-poll-option::before,
+.ef-modal-body .ef-preview-container .ef-poll-vote .ef-poll-option::before {
+    content: '' !important;
+    position: absolute !important;
+    left: 0 !important;
+    top: 0 !important;
+    bottom: 0 !important;
+    width: 0% !important;
+    background: linear-gradient(90deg, rgba(99, 102, 241, 0.2), rgba(139, 92, 246, 0.2)) !important;
+    transition: width 0.5s ease !important;
+    z-index: 0 !important;
+}
+
+.ef-preview-container .ef-poll-vote .ef-poll-selected::before,
+.ef-modal-body .ef-preview-container .ef-poll-vote .ef-poll-selected::before {
+    width: 100% !important;
+}
+
+.ef-preview-container .ef-poll-vote .ef-poll-option-value,
+.ef-modal-body .ef-preview-container .ef-poll-vote .ef-poll-option-value {
+    font-size: 1.125rem !important;
+    font-weight: 700 !important;
+    color: var(--ef-text-primary) !important;
+    margin-bottom: 0.375rem !important;
+    position: relative !important;
+    z-index: 1 !important;
+}
+
+.ef-preview-container .ef-poll-vote .ef-poll-option-label,
+.ef-modal-body .ef-preview-container .ef-poll-vote .ef-poll-option-label {
+    font-size: 0.875rem !important;
+    color: var(--ef-text-secondary) !important;
+    position: relative !important;
+    z-index: 1 !important;
+}
+
+.ef-preview-container .ef-poll-vote .ef-poll-option:hover,
+.ef-modal-body .ef-preview-container .ef-poll-vote .ef-poll-option:hover {
+    border-color: #6366f1 !important;
+}
+
+.ef-preview-container .ef-poll-vote .ef-poll-selected,
+.ef-modal-body .ef-preview-container .ef-poll-vote .ef-poll-selected {
+    border-color: #6366f1 !important;
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3) !important;
+}
+
+.ef-preview-container .ef-poll-vote .ef-poll-selected .ef-poll-option-value,
+.ef-modal-body .ef-preview-container .ef-poll-vote .ef-poll-selected .ef-poll-option-value {
+    color: #6366f1 !important;
+}
+
+/* Responsive Poll */
+@media (max-width: 767px) {
+
+    .ef-preview-container .ef-poll,
+    .ef-modal-body .ef-preview-container .ef-poll {
+        padding: 1.5rem !important;
+    }
+
+    .ef-preview-container .ef-poll-question,
+    .ef-modal-body .ef-preview-container .ef-poll-question {
+        font-size: 1.125rem !important;
+    }
+
+    .ef-preview-container .ef-poll-emoji .ef-poll-options,
+    .ef-modal-body .ef-preview-container .ef-poll-emoji .ef-poll-options {
+        gap: 0.75rem !important;
+    }
+
+    .ef-preview-container .ef-poll-emoji .ef-poll-option,
+    .ef-modal-body .ef-preview-container .ef-poll-emoji .ef-poll-option {
+        min-width: 80px !important;
+        padding: 0.875rem 1rem !important;
+    }
+
+    .ef-preview-container .ef-poll-emoji .ef-poll-option-value,
+    .ef-modal-body .ef-preview-container .ef-poll-emoji .ef-poll-option-value {
+        font-size: 2rem !important;
+    }
+}
+
+/* ========== EMBED BLOCK ========== */
+/* TAMBAHKAN setelah poll styles */
+
+.ef-preview-container .ef-embed-block,
+.ef-modal-body .ef-preview-container .ef-embed-block {
+    margin: 2rem 0 !important;
+}
+
+.ef-preview-container .ef-embed-container,
+.ef-modal-body .ef-preview-container .ef-embed-container {
+    position: relative !important;
+    width: 100% !important;
+    padding-bottom: 56.25% !important;
+    /* 16:9 aspect ratio */
+    height: 0 !important;
+    overflow: hidden !important;
+    border-radius: 12px !important;
+    background: rgba(0, 0, 0, 0.3) !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2) !important;
+}
+
+.ef-preview-container .ef-embed-container iframe,
+.ef-modal-body .ef-preview-container .ef-embed-container iframe {
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    border: none !important;
+}
+
+.ef-preview-container .ef-embed-caption,
+.ef-modal-body .ef-preview-container .ef-embed-caption {
+    margin-top: 0.75rem !important;
+    text-align: center !important;
+    color: var(--ef-text-secondary) !important;
+    font-size: 0.9375rem !important;
+    font-style: italic !important;
+}
+
+.ef-preview-container .ef-embed-container::after,
+.ef-modal-body .ef-preview-container .ef-embed-container::after {
+    content: '📹 Video Embed' !important;
+    position: absolute !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    color: rgba(255, 255, 255, 0.5) !important;
+    font-size: 1.5rem !important;
+    pointer-events: none !important;
+    z-index: 0 !important;
+}
+
+.ef-preview-container .ef-embed-container iframe,
+.ef-modal-body .ef-preview-container .ef-embed-container iframe {
+    z-index: 1 !important;
+}
+
+/* Responsive Embed */
+@media (max-width: 767px) {
+
+    .ef-preview-container .ef-embed-container,
+    .ef-modal-body .ef-preview-container .ef-embed-container {
+        border-radius: 8px !important;
+    }
+
+    .ef-preview-container .ef-embed-caption,
+    .ef-modal-body .ef-preview-container .ef-embed-caption {
+        font-size: 0.875rem !important;
+    }
+}
+
+/* ========== DIVIDER / SEPARATOR COMPONENTS - 5 VARIANTS ========== */
+/* TAMBAHKAN setelah embed styles */
+
+/* Base Divider */
+.ef-preview-container .ef-divider,
+.ef-modal-body .ef-preview-container .ef-divider {
+    margin: 3rem 0 !important;
+    width: 100% !important;
+}
+
+/* Solid Line Divider */
+.ef-preview-container .ef-divider-line,
+.ef-modal-body .ef-preview-container .ef-divider-line {
+    height: 2px !important;
+    background: var(--ef-card-border) !important;
+    border: none !important;
+}
+
+/* Dashed Line Divider */
+.ef-preview-container .ef-divider-dashed,
+.ef-modal-body .ef-preview-container .ef-divider-dashed {
+    height: 0 !important;
+    border: none !important;
+    border-top: 2px dashed var(--ef-card-border) !important;
+}
+
+/* Dotted Line Divider */
+.ef-preview-container .ef-divider-dotted,
+.ef-modal-body .ef-preview-container .ef-divider-dotted {
+    height: 0 !important;
+    border: none !important;
+    border-top: 3px dotted var(--ef-card-border) !important;
+}
+
+/* Gradient Line Divider */
+.ef-preview-container .ef-divider-gradient,
+.ef-modal-body .ef-preview-container .ef-divider-gradient {
+    height: 2px !important;
+    background: linear-gradient(90deg, transparent, var(--ef-card-border), transparent) !important;
+    border: none !important;
+}
+
+/* Text Divider */
+.ef-preview-container .ef-divider-text,
+.ef-modal-body .ef-preview-container .ef-divider-text {
+    text-align: center !important;
+    color: var(--ef-text-secondary) !important;
+    font-size: 1.5rem !important;
+    letter-spacing: 0.5rem !important;
+    height: auto !important;
+    line-height: 1 !important;
+}
+
+/* Responsive Dividers */
+@media (max-width: 767px) {
+
+    .ef-preview-container .ef-divider,
+    .ef-modal-body .ef-preview-container .ef-divider {
+        margin: 2rem 0 !important;
+    }
+
+    .ef-preview-container .ef-divider-text,
+    .ef-modal-body .ef-preview-container .ef-divider-text {
+        font-size: 1.25rem !important;
+        letter-spacing: 0.375rem !important;
+    }
+}
+
+/* ========== IMAGE BLOCK ========== */
+/* TAMBAHKAN setelah divider styles */
+
+.ef-preview-container .ef-image-block,
+.ef-modal-body .ef-preview-container .ef-image-block {
+    margin: 2rem 0 !important;
+    display: block !important;
+}
+
+.ef-preview-container .ef-image,
+.ef-modal-body .ef-preview-container .ef-image {
+    width: 100% !important;
+    height: auto !important;
+    border-radius: 12px !important;
+    display: block !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+    transition: transform 0.3s ease, box-shadow 0.3s ease !important;
+}
+
+.ef-preview-container .ef-image:hover,
+.ef-modal-body .ef-preview-container .ef-image:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25) !important;
+}
+
+.ef-preview-container .ef-image-caption,
+.ef-modal-body .ef-preview-container .ef-image-caption {
+    margin-top: 0.875rem !important;
+    text-align: center !important;
+    color: var(--ef-text-secondary) !important;
+    font-size: 0.9375rem !important;
+    font-style: italic !important;
+    line-height: 1.6 !important;
+}
+
+/* Responsive Image */
+@media (max-width: 767px) {
+
+    .ef-preview-container .ef-image,
+    .ef-modal-body .ef-preview-container .ef-image {
+        border-radius: 8px !important;
+    }
+
+    .ef-preview-container .ef-image-caption,
+    .ef-modal-body .ef-preview-container .ef-image-caption {
+        font-size: 0.875rem !important;
+    }
+}
+
+/* Theme-specific styles for article content */
+.ef-article-content {
+    padding: 2rem;
+    border-radius: 12px;
+}
+
+.ef-theme-glassmorphism {
+    background: var(--ef-card-bg);
+    backdrop-filter: blur(12px);
+    border: 1px solid var(--ef-card-border);
+}
+
+.ef-theme-simple-modern {
+    background: #ffffff;
+    border: 1px solid #e9ecef;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.ef-theme-simple-modern h2,
+.ef-theme-simple-modern h3,
+.ef-theme-simple-modern h4,
+.ef-theme-simple-modern p,
+.ef-theme-simple-modern li {
+    color: #212529;
+}
+
+.ef-theme-colorful {
+    background: linear-gradient(135deg, #fff 0%, #f0f9ff 100%);
+    border: 3px solid;
+    border-image: linear-gradient(135deg, #667eea, #764ba2, #f093fb) 1;
+}
+
+/* Scrollbar */
+.ef-components::-webkit-scrollbar,
+.ef-modal-content::-webkit-scrollbar {
+    width: 8px;
+}
+
+.ef-components::-webkit-scrollbar-track,
+.ef-modal-content::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 4px;
+}
+
+.ef-components::-webkit-scrollbar-thumb,
+.ef-modal-content::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+}
+
+.ef-components::-webkit-scrollbar-thumb:hover,
+.ef-modal-content::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+/* Card Icon Top */
+.ef-preview-container .ef-card-icon-top,
+.ef-modal-body .ef-preview-container .ef-card-icon-top {
+    text-align: center !important;
+}
+
+.ef-preview-container .ef-card-icon-large,
+.ef-modal-body .ef-preview-container .ef-card-icon-large {
+    width: 64px !important;
+    height: 64px !important;
+    background: linear-gradient(135deg, #6366f1, #8b5cf6) !important;
+    border-radius: 12px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    margin-bottom: 1rem !important;
+}
+
+.ef-preview-container .ef-card-icon-large svg,
+.ef-modal-body .ef-preview-container .ef-card-icon-large svg {
+    color: white !important;
+    font-size: 2rem !important;
+}
+
+.ef-preview-container .ef-card-icon-large i,
+.ef-modal-body .ef-preview-container .ef-card-icon-large i {
+    color: white !important;
+    font-size: 2rem !important;
+}
+
+/* Card Hover */
+.ef-preview-container .ef-card-hover,
+.ef-modal-body .ef-preview-container .ef-card-hover {
+    transition: all 0.3s ease !important;
+    cursor: pointer !important;
+}
+
+.ef-preview-container .ef-card-hover:hover,
+.ef-modal-body .ef-preview-container .ef-card-hover:hover {
+    transform: translateY(-8px) !important;
+    box-shadow: 0 12px 24px rgba(99, 102, 241, 0.3) !important;
+    border-color: #6366f1 !important;
+}
+
+/* Card Bordered */
+.ef-preview-container .ef-card-bordered,
+.ef-modal-body .ef-preview-container .ef-card-bordered {
+    border: 3px solid !important;
+    border-image: linear-gradient(135deg, #6366f1, #8b5cf6) 1 !important;
+    background: transparent !important;
+}
+
+/* Card Gradient */
+.ef-preview-container .ef-card-gradient,
+.ef-modal-body .ef-preview-container .ef-card-gradient {
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(139, 92, 246, 0.2)) !important;
+    border: 1px solid rgba(99, 102, 241, 0.4) !important;
+}
+
+.ef-preview-container .ef-card-gradient h4,
+.ef-modal-body .ef-preview-container .ef-card-gradient h4 {
+    background: linear-gradient(135deg, #6366f1, #8b5cf6) !important;
+    -webkit-background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
+    background-clip: text !important;
+}
+
+/* Card Stat */
+.ef-preview-container .ef-card-stat,
+.ef-modal-body .ef-preview-container .ef-card-stat {
+    text-align: center !important;
+    padding: 2rem 1.5rem !important;
+}
+
+.ef-preview-container .ef-stat-number,
+.ef-modal-body .ef-preview-container .ef-stat-number {
+    font-size: 2.5rem !important;
+    font-weight: 700 !important;
+    color: var(--ef-text-primary) !important;
+    margin-bottom: 0.5rem !important;
+    background: linear-gradient(135deg, #6366f1, #8b5cf6) !important;
+    -webkit-background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
+    background-clip: text !important;
+}
+
+.ef-preview-container .ef-stat-label,
+.ef-modal-body .ef-preview-container .ef-stat-label {
+    font-size: 1.125rem !important;
+    font-weight: 600 !important;
+    color: var(--ef-text-primary) !important;
+    margin-bottom: 0.75rem !important;
+}
+
+.ef-preview-container .ef-stat-desc,
+.ef-modal-body .ef-preview-container .ef-stat-desc {
+    font-size: 0.875rem !important;
+    color: var(--ef-text-secondary) !important;
+    margin-bottom: 0 !important;
+}
+
+/* ========== RESPONSIVE BREAKPOINTS ========== */
+
+@media (max-width: 1920px) {
+    .ef-canvas-block span {
+        max-width: 30rem;
+    }
+}
+
+@media (max-width: 1440px) {
+    .ef-canvas-block span {
+        max-width: 25rem;
+    }
+}
+
+@media (max-width: 1280px) {
+    .ef-canvas-block span {
+        max-width: 20rem;
+    }
+}
+
+/* Tablet (768px - 1023px) */
+@media (max-width: 1023px) {
+    .ef-editor-body {
+        grid-template-columns: 1fr;
+    }
+
+    .ef-components {
+        max-height: 50vh;
+    }
+
+    .ef-canvas-block span {
+        max-width: 25rem;
+    }
+}
+
+/* Mobile Landscape & Small Tablet (481px - 767px) */
+@media (max-width: 767px) {
+    .ef-article-builder {
+        padding: 1rem;
+        min-height: auto;
+    }
+
+    /* Prevent scrolling */
+    .ef-article-builder {
+        overflow-x: hidden;
+        height: 100vh;
+        /* overflow-y: auto; */
+    }
+
+    .ef-editor-title {
+        font-size: 1.25rem;
+    }
+
+    .ef-btn {
+        padding: 0.5rem 0.75rem;
+        font-size: 0.8125rem;
+    }
+
+    .ef-canvas {
+        padding: 1rem;
+        min-height: 300px;
+    }
+
+    .ef-canvas-block {
+        padding: 0.75rem;
+        gap: 0.5rem;
+    }
+
+    .ef-canvas-block i {
+        font-size: 1rem;
+    }
+
+    .ef-modal-content {
+        max-width: 100%;
+        border-radius: 0;
+        max-height: 100vh;
+    }
+
+    .ef-modal-header {
+        padding: 1rem;
+    }
+
+    .ef-modal-header h3 {
+        font-size: 1.25rem;
+    }
+
+    .ef-modal-body {
+        padding: 1rem;
+    }
+
+    .ef-modal-footer {
+        padding: 1rem;
+        flex-direction: column;
+    }
+
+    .ef-modal-footer .ef-btn {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .ef-preview-container,
+    .ef-modal-body .ef-preview-container {
+        padding: 1rem;
+    }
+
+    .ef-preview-container h2,
+    .ef-modal-body .ef-preview-container h2 {
+        font-size: 1.5rem !important;
+    }
+
+    .ef-preview-container h3,
+    .ef-modal-body .ef-preview-container h3 {
+        font-size: 1.25rem !important;
+    }
+
+    .ef-preview-container h4,
+    .ef-modal-body .ef-preview-container h4 {
+        font-size: 1.125rem !important;
+    }
+
+    .ef-preview-container .ef-cta-buttons,
+    .ef-modal-body .ef-preview-container .ef-cta-buttons {
+        flex-direction: column !important;
+    }
+
+    .ef-preview-container .ef-cta-btn,
+    .ef-modal-body .ef-preview-container .ef-cta-btn {
+        width: 100%;
+        text-align: center;
+    }
+
+    .ef-canvas-block span {
+        max-width: 10rem;
+    }
+}
+
+/* Mobile Portrait (320px - 480px) */
+@media (max-width: 480px) {
+    .ef-article-builder {
+        padding: 0.75rem;
+        border-radius: 8px;
+    }
+
+    .ef-editor-title {
+        font-size: 1.125rem;
+    }
+
+    .ef-editor-actions {
+        width: 100%;
+    }
+
+    .ef-btn {
+        flex: 1;
+        min-width: 0;
+        padding: 0.5rem;
+        font-size: 0.75rem;
+        gap: 0.25rem;
+    }
+
+    .ef-btn i {
+        font-size: 0.875rem;
+    }
+
+    .ef-canvas {
+        padding: 0.75rem;
+    }
+
+    .ef-canvas-placeholder {
+        padding: 2rem 0.5rem;
+        font-size: 1rem;
+    }
+
+    .ef-canvas-block {
+        padding: 0.625rem;
+        font-size: 0.8125rem;
+    }
+
+    .ef-modal-header h3 {
+        font-size: 1.125rem;
+    }
+
+    .ef-form-control {
+        font-size: 0.875rem;
+        padding: 0.625rem;
+    }
+
+    .ef-preview-container,
+    .ef-modal-body .ef-preview-container {
+        padding: 0.75rem;
+    }
+
+    .ef-preview-container h2,
+    .ef-modal-body .ef-preview-container h2 {
+        font-size: 1.25rem !important;
+        margin: 1.5rem 0 0.75rem 0 !important;
+    }
+
+    .ef-preview-container h3,
+    .ef-modal-body .ef-preview-container h3 {
+        font-size: 1.125rem !important;
+        margin: 1rem 0 0.5rem 0 !important;
+    }
+
+    .ef-preview-container h4,
+    .ef-modal-body .ef-preview-container h4 {
+        font-size: 1rem !important;
+    }
+
+    .ef-preview-container p,
+    .ef-modal-body .ef-preview-container p {
+        font-size: 0.9375rem !important;
+        margin-bottom: 1rem !important;
+    }
+
+    .ef-preview-container .ef-card,
+    .ef-modal-body .ef-preview-container .ef-card {
+        padding: 1rem !important;
+    }
+
+    .ef-preview-container .ef-card-icon,
+    .ef-modal-body .ef-preview-container .ef-card-icon {
+        width: 40px !important;
+        height: 40px !important;
+    }
+
+    .ef-preview-container .ef-card-icon i,
+    .ef-modal-body .ef-preview-container .ef-card-icon i {
+        font-size: 1.25rem !important;
+    }
+
+    .ef-code-block {
+        padding: 0.75rem;
+        font-size: 0.75rem;
+    }
+}
+
+
+/* Locked Premium Blocks */
+.ef-canvas-block-locked {
+    background: rgba(255, 193, 7, 0.1) !important;
+    border-left: 4px solid #ff9800 !important;
+    opacity: 0.7;
+}
+
+.ef-canvas-block-locked:hover {
+    background: rgba(255, 193, 7, 0.15) !important;
+}
+
+/* Premium Placeholder (for HTML output) */
+.ef-premium-placeholder {
+    background: rgba(255, 255, 255, 0.05);
+    border: 2px dashed rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    padding: 2rem;
+    text-align: center;
+    margin: 1.5rem 0;
+}
+
+.ef-premium-placeholder-icon {
+    font-size: 3rem;
+    color: rgba(255, 255, 255, 0.3);
+    margin-bottom: 1rem;
+}
+
+.ef-premium-placeholder-content p {
+    margin: 0.5rem 0;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.ef-premium-placeholder-content p strong {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 1.1rem;
+}
+
+/* Sidebar Premium Items (Locked) - For Flat List */
+.ef-component-list>.ef-component-item.ef-premium-locked {
+    opacity: 0.6;
+    cursor: not-allowed !important;
+    background: rgba(255, 193, 7, 0.05);
+    position: relative;
+}
+
+.ef-component-list>.ef-component-item.ef-premium-locked::after {
+    content: 'PRO';
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    right: 0.75rem;
+    background: linear-gradient(135deg, #f59e0b, #f97316);
+    color: white;
+    padding: 0.125rem 0.5rem;
+    border-radius: 0.5rem;
+    font-size: 0.625rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+}
+
+.ef-component-list>.ef-component-item.ef-premium-locked:hover {
+    background: rgba(255, 193, 7, 0.1);
+    transform: none;
+}
+
+/* Locked Edit Form */
+.ef-locked-edit-notice {
+    background: rgba(255, 193, 7, 0.1);
+    border: 2px solid #f59e0b;
+    border-radius: 8px;
+    padding: 1.5rem;
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+
+.ef-locked-icon {
+    font-size: 3rem;
+    color: #f59e0b;
+    margin-bottom: 1rem;
+}
+
+.ef-locked-edit-notice h4 {
+    margin: 0.5rem 0;
+    color: var(--ef-text-primary);
+}
+
+.ef-locked-edit-notice p {
+    margin: 0.5rem 0;
+    color: var(--ef-text-secondary);
+}
+
+.ef-locked-preview {
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    padding: 1rem;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.ef-locked-preview p {
+    margin: 0.5rem 0;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.875rem;
+}
+
+.ef-locked-edit-actions {
+    margin-top: 1.5rem;
+}
+
+/* Expiry Banner */
+.ef-expiry-banner {
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.9), rgba(249, 115, 22, 0.9));
+    border-radius: 8px;
+    padding: 1rem 1.5rem;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    animation: ef-banner-slide-down 0.3s ease-out;
+}
+
+@keyframes ef-banner-slide-down {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.ef-expiry-banner-content {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    color: white;
+    flex: 1;
+}
+
+.ef-expiry-banner-content i {
+    font-size: 1.5rem;
+}
+
+.ef-expiry-banner-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.ef-btn-warning {
+    background: rgba(255, 255, 255, 0.9);
+    color: #d97706;
+    border: none;
+}
+
+.ef-btn-warning:hover {
+    background: white;
+    color: #b45309;
+}
+
+.ef-expiry-banner-close {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.25rem;
+    cursor: pointer;
+    padding: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    transition: all 0.2s;
+}
+
+.ef-expiry-banner-close:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+/* Premium Preview Locked */
+.ef-premium-preview-locked {
+    background: rgba(255, 255, 255, 0.05);
+    border: 2px dashed rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    padding: 2.5rem;
+    text-align: center;
+    margin: 1.5rem 0;
+}
+
+.ef-premium-preview-icon {
+    font-size: 3.5rem;
+    color: rgba(255, 255, 255, 0.3);
+    margin-bottom: 1rem;
+}
+
+.ef-premium-preview-content p {
+    margin: 0.5rem 0;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.ef-premium-preview-content p strong {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 1.125rem;
+}
+
+/* Live Preview Locked */
+.ef-live-preview-locked {
+    background: rgba(255, 193, 7, 0.1);
+    border: 1px dashed #f59e0b;
+    border-radius: 6px;
+    padding: 1rem;
+    text-align: center;
+    margin: 1rem 0;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.875rem;
+}
+
+.ef-live-preview-locked i {
+    color: #f59e0b;
+    margin-right: 0.5rem;
+}
+
+/* ========== LINK CARD COMPONENT ========== */
+.ef-preview-container .ef-link-card,
+.ef-modal-body .ef-preview-container .ef-link-card {
+    margin: 2rem 0 !important;
+}
+
+.ef-preview-container .ef-link-card-inner,
+.ef-modal-body .ef-preview-container .ef-link-card-inner {
+    display: flex !important;
+    align-items: center !important;
+    gap: 1.25rem !important;
+    padding: 1.5rem !important;
+    background: var(--ef-card-bg) !important;
+    border: 2px solid var(--ef-card-border) !important;
+    border-radius: 12px !important;
+    text-decoration: none !important;
+    transition: all 0.3s ease !important;
+    cursor: pointer !important;
+}
+
+.ef-preview-container .ef-link-card-inner:hover,
+.ef-modal-body .ef-preview-container .ef-link-card-inner:hover {
+    border-color: #6366f1 !important;
+    transform: translateX(8px) !important;
+    box-shadow: 0 8px 16px rgba(99, 102, 241, 0.2) !important;
+}
+
+.ef-preview-container .ef-link-icon,
+.ef-modal-body .ef-preview-container .ef-link-icon {
+    width: 48px !important;
+    height: 48px !important;
+    background: linear-gradient(135deg, #6366f1, #8b5cf6) !important;
+    border-radius: 10px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    flex-shrink: 0 !important;
+}
+
+.ef-preview-container .ef-link-icon i,
+.ef-modal-body .ef-preview-container .ef-link-icon i {
+    color: white !important;
+    font-size: 1.25rem !important;
+}
+
+.ef-preview-container .ef-link-content,
+.ef-modal-body .ef-preview-container .ef-link-content {
+    flex: 1 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 0.375rem !important;
+}
+
+.ef-preview-container .ef-link-text,
+.ef-modal-body .ef-preview-container .ef-link-text {
+    color: var(--ef-text-primary) !important;
+    font-size: 1.125rem !important;
+    font-weight: 600 !important;
+}
+
+.ef-preview-container .ef-link-url,
+.ef-modal-body .ef-preview-container .ef-link-url {
+    color: var(--ef-text-secondary) !important;
+    font-size: 0.875rem !important;
+    opacity: 0.8 !important;
+    word-break: break-all !important;
+}
+
+.ef-preview-container .ef-link-arrow,
+.ef-modal-body .ef-preview-container .ef-link-arrow {
+    color: #6366f1 !important;
+    font-size: 1.25rem !important;
+    flex-shrink: 0 !important;
+    transition: transform 0.3s ease !important;
+}
+
+.ef-preview-container .ef-link-card-inner:hover .ef-link-arrow,
+.ef-modal-body .ef-preview-container .ef-link-card-inner:hover .ef-link-arrow {
+    transform: translateX(4px) !important;
+}
+
+/* Responsive Link Card */
+@media (max-width: 767px) {
+
+    .ef-preview-container .ef-link-card-inner,
+    .ef-modal-body .ef-preview-container .ef-link-card-inner {
+        padding: 1.25rem !important;
+        gap: 1rem !important;
+    }
+
+    .ef-preview-container .ef-link-icon,
+    .ef-modal-body .ef-preview-container .ef-link-icon {
+        width: 40px !important;
+        height: 40px !important;
+    }
+
+    .ef-preview-container .ef-link-icon i,
+    .ef-modal-body .ef-preview-container .ef-link-icon i {
+        font-size: 1rem !important;
+    }
+
+    .ef-preview-container .ef-link-text,
+    .ef-modal-body .ef-preview-container .ef-link-text {
+        font-size: 1rem !important;
+    }
+}
+
+/* ========== TABLE EDIT FORM FIX ========== */
+.ef-table-row {
+    background: rgba(255, 255, 255, 0.03);
+    padding: 0.75rem;
+    border-radius: 8px;
+    margin-bottom: 0.75rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.ef-table-row-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.75rem;
+}
+
+.ef-table-row-header span {
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 0.875rem;
+    font-weight: 600;
+}
+
+.ef-table-row-cells {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 0.5rem;
+}
+
+/* Limit max columns per row */
+@media (min-width: 768px) {
+    .ef-table-row-cells {
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    }
+}
+
+@media (min-width: 1024px) {
+    .ef-table-row-cells {
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    }
+}
+
+/* Scrollable container for many columns */
+.ef-table-row-cells-wrapper {
+    max-width: 100%;
+    overflow-x: auto;
+    padding-bottom: 0.5rem;
+}
+
+.ef-table-row-cells-wrapper::-webkit-scrollbar {
+    height: 6px;
+}
+
+.ef-table-row-cells-wrapper::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 3px;
+}
+
+.ef-table-row-cells-wrapper::-webkit-scrollbar-thumb {
+    background: rgba(99, 102, 241, 0.5);
+    border-radius: 3px;
+}
+
+/* Cell input in table */
+.ef-table-cell-input {
+    flex: 1;
+    margin-bottom: 0;
+    min-width: 120px;
+}
+
+.ef-table-cell-input label {
+    font-size: 0.75rem;
+    margin-bottom: 0.25rem;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.ef-table-cell-input input {
+    width: 100%;
+}
