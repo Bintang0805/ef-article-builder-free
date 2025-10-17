@@ -1383,7 +1383,35 @@
         }
 
         getBlockPreview(block) {
-            if (!block || !block.tag) {
+            if (!block) {
+                return '<i class="fas fa-exclamation-triangle"></i> <span>Invalid block</span>';
+            }
+
+            // Handle premium blocks yang tidak punya tag property
+            if (!block.tag && block.type) {
+                // Check if premium block
+                if (this.isPremiumBlock(block) && !this.isPremium) {
+                    const label = this.componentLabels[block.type] || block.type;
+                    return `
+                <i class="fas fa-lock"></i>
+                <span>${label} (License Required)</span>
+                <button class="ef-canvas-block-delete" title="Hapus">
+                    <i class="fas fa-trash"></i>
+                </button>
+            `;
+                }
+
+                // Assign tag based on type for premium components
+                if (block.type.startsWith('tip-') || block.type.startsWith('card-') ||
+                    block.type.startsWith('cta-') || block.type.startsWith('timeline-') ||
+                    block.type.startsWith('accordion-') || block.type.startsWith('poll-')) {
+                    block.tag = 'div';
+                } else if (block.type.startsWith('table-')) {
+                    block.tag = 'table';
+                }
+            }
+
+            if (!block.tag) {
                 return '<i class="fas fa-exclamation-triangle"></i> <span>Invalid block</span>';
             }
 
@@ -2837,13 +2865,251 @@
         }
 
         showImport() {
-            const importData = prompt('Paste JSON data:');
-            if (importData) {
+            // Create import modal if not exists
+            let importModal = document.querySelector(`#ef-modals-${this.instanceId} #ef-modal-import`);
+            if (!importModal) {
+                const modalHTML = `
+            <div class="ef-modal" id="ef-modal-import">
+                <div class="ef-modal-content ef-modal-lg">
+                    <div class="ef-modal-header">
+                        <h3><i class="fas fa-file-import"></i> Import Data</h3>
+                        <button class="ef-modal-close">&times;</button>
+                    </div>
+                    <div class="ef-modal-body">
+                        <div class="ef-import-tabs">
+                            <button class="ef-import-tab ef-tab-active" data-tab="json">
+                                <i class="fas fa-code"></i> JSON
+                            </button>
+                            <button class="ef-import-tab" data-tab="html">
+                                <i class="fas fa-file-code"></i> HTML
+                            </button>
+                        </div>
+                        
+                        <div class="ef-import-content ef-import-json ef-tab-content-active">
+                            <div class="ef-form-group">
+                                <label>Paste JSON Data</label>
+                                <textarea class="ef-form-control" id="ef-import-json-input" rows="12" 
+                                    placeholder='{"editorTheme":"glassmorphism","content":[...]}'></textarea>
+                                <small style="color: rgba(255,255,255,0.6); font-size: 0.8125rem; margin-top: 0.5rem; display: block;">
+                                    <i class="fas fa-info-circle"></i> Paste JSON export from another editor or backup
+                                </small>
+                            </div>
+                        </div>
+                        
+                        <div class="ef-import-content ef-import-html" style="display: none;">
+                            <div class="ef-form-group">
+                                <label>Paste HTML Code</label>
+                                <textarea class="ef-form-control" id="ef-import-html-input" rows="12" 
+                                    placeholder='<div class="ef-preview-container">...</div>'></textarea>
+                                <small style="color: rgba(255,255,255,0.6); font-size: 0.8125rem; margin-top: 0.5rem; display: block;">
+                                    <i class="fas fa-info-circle"></i> Paste HTML from exported articles or websites
+                                </small>
+                            </div>
+                        </div>
+                        
+                        <div id="ef-import-error" style="display: none; margin-top: 1rem;">
+                            <div class="ef-alert ef-alert-danger">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                <span id="ef-import-error-message"></span>
+                            </div>
+                        </div>
+                        
+                        <div id="ef-import-success" style="display: none; margin-top: 1rem;">
+                            <div class="ef-alert ef-alert-success">
+                                <i class="fas fa-check-circle"></i>
+                                Import successful! <span id="ef-import-stats"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="ef-modal-footer">
+                        <button class="ef-btn ef-btn-secondary" onclick="this.closest('.ef-modal').classList.remove('ef-modal-active'); document.body.classList.remove('ef-modal-open');">
+                            Cancel
+                        </button>
+                        <button class="ef-btn ef-btn-primary" id="ef-import-button">
+                            <i class="fas fa-file-import"></i> Import
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
+
+                const modalContainer = document.querySelector(`#ef-modals-${this.instanceId}`);
+                const tempDiv = document.createElement('div');
+                tempDiv.innerHTML = modalHTML;
+                modalContainer.appendChild(tempDiv.firstElementChild);
+
+                // Attach events
+                this.attachImportModalEvents();
+            }
+
+            // Reset state
+            const errorDiv = document.querySelector(`#ef-modals-${this.instanceId} #ef-import-error`);
+            const successDiv = document.querySelector(`#ef-modals-${this.instanceId} #ef-import-success`);
+            const jsonInput = document.querySelector(`#ef-modals-${this.instanceId} #ef-import-json-input`);
+            const htmlInput = document.querySelector(`#ef-modals-${this.instanceId} #ef-import-html-input`);
+
+            if (errorDiv) errorDiv.style.display = 'none';
+            if (successDiv) successDiv.style.display = 'none';
+            if (jsonInput) jsonInput.value = '';
+            if (htmlInput) htmlInput.value = '';
+
+            // Show modal
+            importModal = document.querySelector(`#ef-modals-${this.instanceId} #ef-modal-import`);
+            if (importModal) {
+                importModal.classList.add('ef-modal-active');
+                document.body.classList.add('ef-modal-open');
+            }
+        }
+
+        attachImportModalEvents() {
+            const modalContainer = document.querySelector(`#ef-modals-${this.instanceId}`);
+            if (!modalContainer) return;
+
+            // Tab switching
+            const tabs = modalContainer.querySelectorAll('.ef-import-tab');
+            tabs.forEach(tab => {
+                tab.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const targetTab = tab.dataset.tab;
+
+                    // Update tab styles
+                    tabs.forEach(t => t.classList.remove('ef-tab-active'));
+                    tab.classList.add('ef-tab-active');
+
+                    // Update content visibility
+                    modalContainer.querySelectorAll('.ef-import-content').forEach(content => {
+                        content.style.display = 'none';
+                        content.classList.remove('ef-tab-content-active');
+                    });
+
+                    const targetContent = modalContainer.querySelector(`.ef-import-${targetTab}`);
+                    if (targetContent) {
+                        targetContent.style.display = 'block';
+                        targetContent.classList.add('ef-tab-content-active');
+                    }
+                });
+            });
+
+            // Import button
+            const importBtn = modalContainer.querySelector('#ef-import-button');
+            if (importBtn) {
+                importBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    this.handleImport();
+                });
+            }
+        }
+
+        handleImport() {
+            const modalContainer = document.querySelector(`#ef-modals-${this.instanceId}`);
+            const activeTab = modalContainer.querySelector('.ef-tab-content-active');
+            const errorDiv = modalContainer.querySelector('#ef-import-error');
+            const errorMsg = modalContainer.querySelector('#ef-import-error-message');
+            const successDiv = modalContainer.querySelector('#ef-import-success');
+            const successStats = modalContainer.querySelector('#ef-import-stats');
+
+            // Hide previous messages
+            if (errorDiv) errorDiv.style.display = 'none';
+            if (successDiv) successDiv.style.display = 'none';
+
+            let importData = '';
+            if (activeTab && activeTab.classList.contains('ef-import-json')) {
+                const jsonInput = modalContainer.querySelector('#ef-import-json-input');
+                importData = jsonInput ? jsonInput.value.trim() : '';
+
+                if (!importData) {
+                    if (errorDiv && errorMsg) {
+                        errorMsg.textContent = 'Please paste JSON data to import';
+                        errorDiv.style.display = 'block';
+                    }
+                    return;
+                }
+            } else if (activeTab && activeTab.classList.contains('ef-import-html')) {
+                const htmlInput = modalContainer.querySelector('#ef-import-html-input');
+                importData = htmlInput ? htmlInput.value.trim() : '';
+
+                if (!importData) {
+                    if (errorDiv && errorMsg) {
+                        errorMsg.textContent = 'Please paste HTML code to import';
+                        errorDiv.style.display = 'block';
+                    }
+                    return;
+                }
+            }
+
+            try {
+                // Clear current data first if needed
+                const confirmClear = this.data.length > 0 ?
+                    confirm('This will replace all current content. Continue?') : true;
+
+                if (!confirmClear) return;
+
+                const previousCount = this.data.length;
                 const success = this.import(importData);
+
                 if (success) {
-                    alert('Import berhasil!');
+                    // Count components by type
+                    let basicCount = 0;
+                    let premiumCount = 0;
+                    let lockedCount = 0;
+
+                    this.data.forEach(block => {
+                        if (block.type === 'premium-locked') {
+                            lockedCount++;
+                        } else if (this.isPremiumBlock(block)) {
+                            premiumCount++;
+                        } else {
+                            basicCount++;
+                        }
+                    });
+
+                    // Build stats message
+                    let statsMessage = '';
+                    if (basicCount > 0) {
+                        statsMessage += `${basicCount} basic component${basicCount > 1 ? 's' : ''}`;
+                    }
+
+                    if (this.isPremium && premiumCount > 0) {
+                        if (statsMessage) statsMessage += ', ';
+                        statsMessage += `<span style="color: #f59e0b; font-weight: 600;">${premiumCount} premium component${premiumCount > 1 ? 's' : ''}</span>`;
+                    } else if (!this.isPremium && lockedCount > 0) {
+                        if (statsMessage) statsMessage += ', ';
+                        statsMessage += `<span style="color: #ef4444;">${lockedCount} locked premium component${lockedCount > 1 ? 's' : ''}</span>`;
+                    }
+
+                    const totalCount = this.data.length;
+                    statsMessage = `${totalCount} total component${totalCount > 1 ? 's' : ''} imported (${statsMessage})`;
+
+                    if (!this.isPremium && lockedCount > 0) {
+                        statsMessage += `<br><small style="color: rgba(255,255,255,0.6); margin-top: 0.5rem; display: block;">
+                    <i class="fas fa-lock"></i> Premium components are locked. <a href="#" onclick="window.open('https://yoursite.com/pricing', '_blank'); return false;" style="color: #f59e0b; text-decoration: underline;">Get license to unlock</a>
+                </small>`;
+                    }
+
+                    if (successDiv && successStats) {
+                        successStats.innerHTML = statsMessage;
+                        successDiv.style.display = 'block';
+                    }
+
+                    // Check and show expiry banner if needed
+                    this.checkAndShowExpiryBanner();
+
+                    // Auto close after 3 seconds
+                    setTimeout(() => {
+                        const modal = modalContainer.querySelector('#ef-modal-import');
+                        if (modal) {
+                            modal.classList.remove('ef-modal-active');
+                            document.body.classList.remove('ef-modal-open');
+                        }
+                    }, 3000);
                 } else {
-                    alert('Import gagal. Pastikan format JSON benar.');
+                    throw new Error('Import failed - invalid format');
+                }
+            } catch (error) {
+                console.error('Import error:', error);
+                if (errorDiv && errorMsg) {
+                    errorMsg.textContent = error.message || 'Import failed. Please check the format and try again.';
+                    errorDiv.style.display = 'block';
                 }
             }
         }
@@ -3280,18 +3546,69 @@
                 if (data.editorTheme) this.setEditorTheme(data.editorTheme);
                 if (data.contentTheme) this.setContentTheme(data.contentTheme);
                 if (data.content && Array.isArray(data.content)) {
+                    // Process and count components
+                    let importStats = {
+                        total: 0,
+                        basic: 0,
+                        premium: 0,
+                        locked: 0
+                    };
+
                     this.data = data.content.map(block => {
+                        // Fix missing tag for premium components
+                        if (!block.tag && block.type) {
+                            if (block.type.startsWith('tip-') || block.type.startsWith('card-') ||
+                                block.type.startsWith('cta-') || block.type.startsWith('timeline-') ||
+                                block.type.startsWith('accordion-') || block.type.startsWith('poll-')) {
+                                block.tag = 'div';
+                            } else if (block.type.startsWith('table-')) {
+                                block.tag = 'table';
+                            } else if (block.type === 'image' || block.type === 'embed' ||
+                                block.type === 'link' || block.type.startsWith('divider-')) {
+                                block.tag = 'div';
+                            }
+                        }
+
+                        // Ensure layout property exists
+                        if (!block.layout) {
+                            block.layout = 'column';
+                            // Special case for grids and horizontal timeline
+                            if (block.type === 'card-grid-2col' || block.type === 'card-grid-3col' ||
+                                block.type === 'card-grid-masonry' || block.type === 'timeline-horizontal') {
+                                block.layout = 'row';
+                            }
+                        }
+
+                        importStats.total++;
+
                         // Check if premium block needs to be locked
                         if (this.isPremiumBlock(block) && !this.isPremium) {
+                            importStats.locked++;
                             return {
                                 type: 'premium-locked',
                                 lockedType: block.type,
+                                tag: block.tag || 'div',
+                                layout: block.layout || 'column',
                                 encrypted: btoa(JSON.stringify(block)),
                                 note: 'License required'
                             };
+                        } else if (this.isPremiumBlock(block)) {
+                            importStats.premium++;
+                        } else {
+                            importStats.basic++;
                         }
+
                         return block;
                     });
+
+                    // Log import statistics
+                    console.log(`✓ Import complete: ${importStats.total} components`);
+                    console.log(`  Basic: ${importStats.basic}`);
+                    if (this.isPremium) {
+                        console.log(`  Premium: ${importStats.premium}`);
+                    } else if (importStats.locked > 0) {
+                        console.log(`  Locked Premium: ${importStats.locked}`);
+                    }
                 } else if (Array.isArray(data)) {
                     this.data = data.map(block => {
                         if (this.isPremiumBlock(block) && !this.isPremium) {
@@ -3451,6 +3768,39 @@
             } catch (error) {
                 console.error('EfArticleBuilder: HTML import failed', error);
                 return false;
+            }
+        }
+
+        debugImportHTML(html) {
+            try {
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
+
+                let container = doc.querySelector('.ef-preview-container, .ef-article-content');
+                if (!container) {
+                    container = doc.body;
+                }
+
+                const children = Array.from(container.children);
+                console.log(`Found ${children.length} elements to import`);
+
+                children.forEach((element, index) => {
+                    const tagName = element.tagName.toLowerCase();
+                    const classes = element.className;
+                    console.log(`Element ${index}: <${tagName}> class="${classes}"`);
+
+                    // Log tip blocks specifically
+                    if (element.classList.contains('ef-tip-block')) {
+                        const typeClasses = Array.from(element.classList).filter(c => c.startsWith('ef-tip-') || c.startsWith('tip-'));
+                        console.log(`  Tip block types: ${typeClasses.join(', ')}`);
+                        const content = element.querySelector('.ef-tip-content');
+                        if (content) {
+                            console.log(`  Content structure:`, content.innerHTML.substring(0, 100) + '...');
+                        }
+                    }
+                });
+            } catch (error) {
+                console.error('Debug import error:', error);
             }
         }
 
@@ -3614,47 +3964,101 @@
             }
 
             // Tip blocks
+            // Tip blocks
             if (tagName === 'div' && element.classList.contains('ef-tip-block')) {
-                const types = ['tip-info', 'tip-success', 'tip-warning', 'tip-danger', 'tip-note',
-                    'tip-question', 'tip-star', 'tip-check', 'tip-quote', 'tip-steps'];
+                const types = ['info', 'success', 'warning', 'danger', 'note',
+                    'question', 'star', 'check', 'quote', 'steps'];
 
                 for (const type of types) {
-                    if (element.classList.contains(type)) {
-                        if (type === 'tip-quote') {
+                    // Check both with and without 'tip-' prefix
+                    const hasType = element.classList.contains(`ef-tip-${type}`) ||
+                        element.classList.contains(`tip-${type}`);
+
+                    if (hasType) {
+                        const fullType = `tip-${type}`;
+
+                        if (type === 'quote') {
                             const small = element.querySelector('small');
                             const blockquote = element.querySelector('blockquote');
                             const cite = element.querySelector('cite');
+
+                            // Handle case where Quote label might not be in small tag
+                            let label = small?.textContent || 'Quote';
+                            if (!small && !blockquote) {
+                                // Try to extract from content structure
+                                const content = element.querySelector('.ef-tip-content');
+                                if (content) {
+                                    const nodes = Array.from(content.childNodes);
+                                    if (nodes[0]?.nodeType === Node.TEXT_NODE) {
+                                        label = nodes[0].textContent.trim() || 'Quote';
+                                    }
+                                }
+                            }
+
                             return {
                                 tag: 'div',
-                                type: 'tip-quote',
-                                text: `${small?.textContent || 'Quote'}\n${blockquote?.textContent.trim() || ''}\n${cite?.textContent.replace('— ', '') || ''}`,
+                                type: fullType,
+                                text: `${label}\n${blockquote?.textContent.trim() || ''}\n${cite?.textContent.replace('— ', '') || ''}`,
                                 class: '',
                                 layout: 'column'
                             };
-                        } else if (type === 'tip-steps') {
-                            const strong = element.querySelector('strong');
-                            const steps = Array.from(element.querySelectorAll('ol li'))
-                                .map(li => li.textContent.trim());
+                        } else if (type === 'steps') {
+                            const strong = element.querySelector('.ef-tip-content strong');
+                            const stepsList = element.querySelector('.ef-steps-list, ol');
+                            const steps = stepsList ? Array.from(stepsList.querySelectorAll('li'))
+                                .map(li => li.textContent.trim()) : [];
+
                             return {
                                 tag: 'div',
-                                type: 'tip-steps',
+                                type: fullType,
                                 text: `${strong?.textContent || 'Quick Steps'}\n${steps.join('\n')}`,
                                 class: '',
                                 layout: 'column'
                             };
                         } else {
-                            const strong = element.querySelector('strong');
-                            const p = element.querySelector('p');
+                            const content = element.querySelector('.ef-tip-content');
+                            if (!content) {
+                                console.warn('No .ef-tip-content found in tip block');
+                                return null;
+                            }
+
+                            const strong = content.querySelector('strong');
+                            const p = content.querySelector('p');
+
+                            // If no p tag, try to get text after strong
+                            let bodyText = '';
+                            if (p) {
+                                bodyText = p.textContent.trim();
+                            } else if (content.childNodes.length > 1) {
+                                // Get all text nodes after strong element
+                                let foundStrong = false;
+                                for (const node of content.childNodes) {
+                                    if (node === strong) {
+                                        foundStrong = true;
+                                        continue;
+                                    }
+                                    if (foundStrong && node.nodeType === Node.TEXT_NODE) {
+                                        bodyText += node.textContent.trim();
+                                    } else if (foundStrong && node.nodeType === Node.ELEMENT_NODE && node.tagName === 'P') {
+                                        bodyText += node.textContent.trim();
+                                    }
+                                }
+                            }
+
                             return {
                                 tag: 'div',
-                                type: type,
-                                text: `${strong?.textContent || ''}\n${p?.textContent.trim() || ''}`,
+                                type: fullType,
+                                text: `${strong?.textContent || ''}\n${bodyText}`,
                                 class: '',
                                 layout: 'column'
                             };
                         }
                     }
                 }
+
+                // Fallback: if no specific type found but has ef-tip-block class
+                console.warn('Tip block found but type not detected:', element.className);
+                return null;
             }
 
             // Cards

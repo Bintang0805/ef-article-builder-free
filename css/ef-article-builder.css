@@ -145,6 +145,75 @@
     margin: 0 0 var(--ef-spacing-md) 0;
 }
 
+/* 3.5 Import Modal */
+.ef-import-tabs {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.ef-import-tab {
+    background: transparent;
+    border: none;
+    color: rgba(255, 255, 255, 0.6);
+    padding: 0.75rem 1.5rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.ef-import-tab:hover {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.ef-import-tab.ef-tab-active {
+    color: white;
+}
+
+.ef-import-tab.ef-tab-active::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+}
+
+.ef-alert {
+    padding: 1rem 1.25rem;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 0.875rem;
+}
+
+.ef-alert-danger {
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    color: #fca5a5;
+}
+
+.ef-alert-success {
+    background: rgba(34, 197, 94, 0.1);
+    border: 1px solid rgba(34, 197, 94, 0.3);
+    color: #86efac;
+}
+
+.ef-alert-success a {
+    color: #f59e0b !important;
+    text-decoration: underline;
+    transition: opacity 0.3s ease;
+}
+
+.ef-alert-success a:hover {
+    opacity: 0.8;
+}
+
 /* ============================================
    4. BUTTON STYLES
    ============================================ */
