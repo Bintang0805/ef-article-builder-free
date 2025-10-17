@@ -1,6 +1,6 @@
 /**
  * EF Article Builder - Complete Bundle
- * Version: 1.3.0
+ * Version: 1.4.0
  * Single file with dynamic premium component loading
  * License: MIT (Free version) / Commercial (Premium version)
  */
