@@ -1,3 +1,10 @@
+# [1.4.0](https://github.com/Bintang0805/ef-article-builder-free/compare/v1.3.0...v1.4.0) (2025-10-17)
+
+
+### Features
+
+* **import:** add multi-format import modal with tabs ([9c4265c](https://github.com/Bintang0805/ef-article-builder-free/commit/9c4265c1436e92fc395d9b6c96122b3f2b74b65f))
+
 # [1.3.0](https://github.com/Bintang0805/ef-article-builder-free/compare/v1.2.0...v1.3.0) (2025-10-16)
 
 
